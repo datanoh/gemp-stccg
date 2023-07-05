@@ -1,18 +1,12 @@
-var GempLotrDeckBuildingUI = Class.extend({
+var GempStccg1EDeckBuildingUI = Class.extend({
     comm:null,
 
     deckDiv:null,
 
     manageDecksDiv:null,
 
-    ringBearerDiv:null,
-    ringBearerGroup:null,
-
-    ringDiv:null,
-    ringGroup:null,
-
-    siteDiv:null,
-    siteGroup:null,
+    missionsDiv:null,
+    missionsGroup:null,
 
     collectionDiv:null,
     formatSelect:null,
@@ -187,29 +181,8 @@ var GempLotrDeckBuildingUI = Class.extend({
         });
         this.normalCollectionGroup.maxCardHeight = 200;
 
-        this.ringBearerDiv = $("#ringBearerDiv");
-        this.ringBearerDiv.click(
-                function () {
-                    if ($(".card", that.ringBearerDiv).length == 0) {
-                        that.showPredefinedFilter("keyword:CAN_START_WITH_RING type:card", that.ringBearerDiv);
-                    }
-                });
-        this.ringBearerGroup = new NormalCardGroup(this.ringBearerDiv, function (card) {
-            return true;
-        });
-
-        this.ringDiv = $("#ringDiv");
-        this.ringDiv.click(
-                function () {
-                    if ($(".card", that.ringDiv).length == 0)
-                        that.showPredefinedFilter("cardType:THE_ONE_RING type:card", that.ringDiv);
-                });
-        this.ringGroup = new NormalCardGroup(this.ringDiv, function (card) {
-            return true;
-        });
-
-        this.siteDiv = $("#sitesDiv");
-        this.siteGroup = new VerticalBarGroup(this.siteDiv, function (card) {
+        this.missionsDiv = $("#missionsDiv");
+        this.missionsGroup = new VerticalBarGroup(this.missionsDiv, function (card) {
             return true;
         }, true);
 
@@ -366,7 +339,8 @@ var GempLotrDeckBuildingUI = Class.extend({
         );
         that.deckImportDialog.dialog("open");
     },
-    
+
+    // Function only works with LotR style
     parseDecklist:function(rawText) {
         this.clearDeck();
         var that = this;
@@ -390,13 +364,7 @@ var GempLotrDeckBuildingUI = Class.extend({
                 var group = cardElem.getAttribute("group");
                 var cardCount = parseInt(cardElem.getAttribute("count"));
                 for (var j = 0; j < cardCount; j++) {
-                    if (group == "ringBearer") {
-                        that.addCardToContainer(blueprintId, "special", that.ringBearerDiv, false).addClass("cardInDeck");
-                    } else if (group == "ring") {
-                        that.addCardToContainer(blueprintId, "special", that.ringDiv, false).addClass("cardInDeck");
-                    } else {
-                        that.addCardToDeckDontLayout(blueprintId, side);
-                    }
+                    that.addCardToDeckDontLayout(blueprintId, side);
                 }
             }
             that.deckModified(true);
@@ -791,23 +759,23 @@ var GempLotrDeckBuildingUI = Class.extend({
     },
 
     getDeckContents:function () {
-        var ringBearer = $(".card", this.ringBearerDiv);
+        var result = "";
+/*        var ringBearer = $(".card", this.ringBearerDiv);
         var ring = $(".card", this.ringDiv);
 
-        var result = "";
         if (ringBearer.length > 0)
             result += ringBearer.data("card").blueprintId;
         result += "|";
         if (ring.length > 0)
             result += ring.data("card").blueprintId;
         result += "|";
-
-        var sites = new Array();
-        $(".card", this.siteDiv).each(
+*/
+        var missions = new Array();
+        $(".card", this.missionsDiv).each(
                 function () {
-                    sites.push($(this).data("card").blueprintId);
+                    missions.push($(this).data("card").blueprintId);
                 });
-        result += sites;
+        result += missions;
         result += "|";
 
         var cards = new Array();
@@ -1040,6 +1008,7 @@ var GempLotrDeckBuildingUI = Class.extend({
             var notes = root.getElementsByTagName("notes");
             this.notes = notes[0].innerHTML;
 
+/*
             var ringBearer = root.getElementsByTagName("ringBearer");
             if (ringBearer.length > 0)
                 this.addCardToContainer(ringBearer[0].getAttribute("blueprintId"), "deck", this.ringBearerDiv, false).addClass("cardInDeck");
@@ -1047,10 +1016,10 @@ var GempLotrDeckBuildingUI = Class.extend({
             var ring = root.getElementsByTagName("ring");
             if (ring.length > 0)
                 this.addCardToContainer(ring[0].getAttribute("blueprintId"), "deck", this.ringDiv, false).addClass("cardInDeck");
-
-            var sites = root.getElementsByTagName("site");
-            for (var i = 0; i < sites.length; i++)
-                this.addCardToContainer(sites[i].getAttribute("blueprintId"), "deck", this.siteDiv, false).addClass("cardInDeck");
+*/
+            var missions = root.getElementsByTagName("mission");
+            for (var i = 0; i < missions.length; i++)
+                this.addCardToContainer(missions[i].getAttribute("blueprintId"), "deck", this.missionsDiv, false).addClass("cardInDeck");
 
             var cards = root.getElementsByTagName("card");
             for (var i = 0; i < cards.length; i++)
@@ -1117,24 +1086,22 @@ var GempLotrDeckBuildingUI = Class.extend({
             var deckHeight = this.deckDiv.height() - (manageHeight + padding);
 
             var rowHeight = Math.floor((deckHeight - 6 * padding) / 5);
-            var sitesWidth = Math.floor(1.5 * deckHeight / 5);
-            sitesWidth = Math.min(sitesWidth, 250);
+            var missionsWidth = Math.floor(1.5 * deckHeight / 5);
+            missionsWidth = Math.min(missionsWidth, 250);
+
+            var divsTop = manageHeight + 2 * padding
+            var fullHeight = deckHeight - 2 * padding - 50
 
             this.manageDecksDiv.css({position:"absolute", left:padding, top:padding, width:deckWidth, height:manageHeight});
 
-            this.ringBearerDiv.css({ position:"absolute", left:padding, top:manageHeight + 2 * padding, width:Math.floor((sitesWidth - padding) / 2), height:rowHeight });
-            this.ringBearerGroup.setBounds(0, 0, Math.floor((sitesWidth - padding) / 2), rowHeight);
-            this.ringDiv.css({ position:"absolute", left:Math.floor((sitesWidth + 3 * padding) / 2), top:manageHeight + 2 * padding, width:Math.floor((sitesWidth - padding) / 2), height:rowHeight });
-            this.ringGroup.setBounds(0, 0, Math.floor((sitesWidth - padding) / 2), rowHeight);
+            this.missionsDiv.css({ position:"absolute", left:padding, top:divsTop, width:missionsWidth, height:fullHeight});
+            this.missionsGroup.setBounds(0, 0, missionsWidth, fullHeight);
 
-            this.siteDiv.css({ position:"absolute", left:padding, top:manageHeight + 3 * padding + rowHeight, width:sitesWidth, height:deckHeight - rowHeight - 2 * padding});
-            this.siteGroup.setBounds(0, 0, sitesWidth, deckHeight - rowHeight - 2 * padding);
+            this.drawDeckDiv.css({ position:"absolute", left:padding * 2 + missionsWidth, top:divsTop, width:deckWidth - (missionsWidth + padding) - padding, height:fullHeight });
+            this.fpDeckGroup.setBounds(0, 0, deckWidth - (missionsWidth + padding) - padding, fullHeight / 2);
+            this.shadowDeckGroup.setBounds(0, (deckHeight - 2 * padding - 50) / 2, deckWidth - (missionsWidth + padding) - padding, fullHeight / 2);
 
-            this.drawDeckDiv.css({ position:"absolute", left:padding * 2 + sitesWidth, top:manageHeight + 2 * padding, width:deckWidth - (sitesWidth + padding) - padding, height:deckHeight - 2 * padding - 50 });
-            this.fpDeckGroup.setBounds(0, 0, deckWidth - (sitesWidth + padding) - padding, (deckHeight - 2 * padding - 50) / 2);
-            this.shadowDeckGroup.setBounds(0, (deckHeight - 2 * padding - 50) / 2, deckWidth - (sitesWidth + padding) - padding, (deckHeight - 2 * padding - 50) / 2);
-
-            this.bottomBarDiv.css({ position:"absolute", left:padding * 2 + sitesWidth, top:manageHeight + padding + deckHeight - 50, width:deckWidth - (sitesWidth + padding) - padding, height:70 });
+            this.bottomBarDiv.css({ position:"absolute", left:padding * 2 + missionsWidth, top:manageHeight + padding + deckHeight - 50, width:deckWidth - (missionsWidth + padding) - padding, height:70 });
 
             this.cardFilter.layoutUi(padding, 0, collectionWidth - padding, 160);
             //this.normalCollectionDiv.css({ position:"absolute", left:padding, top:160, width:collectionWidth - padding * 2, height:collectionHeight - 160 });
@@ -1147,9 +1114,7 @@ var GempLotrDeckBuildingUI = Class.extend({
     },
 
     layoutSpecialGroups:function () {
-        this.ringBearerGroup.layoutCards();
-        this.ringGroup.layoutCards();
-        this.siteGroup.layoutCards();
+        this.missionsGroup.layoutCards();
     },
 
     layoutDeck:function () {

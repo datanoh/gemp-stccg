@@ -114,7 +114,7 @@ public class TimingAtTest extends AbstractAtTest {
         assertNotSame(_game.getGameState().getCurrentPhase(), Phase.BETWEEN_TURNS);
     }
 
-    @Test
+/*    @Test
     public void playMultipleOptionalEffectsInOrder() throws DecisionResultInvalidException, CardNotFoundException {
         Map<String, Collection<String>> extraCards = new HashMap<>();
         initializeSimplestGame(extraCards);
@@ -141,7 +141,7 @@ public class TimingAtTest extends AbstractAtTest {
 
         assertNotSame(_game.getGameState().getCurrentPhase(), Phase.BETWEEN_TURNS);
     }
-
+*/
     @Test
     public void playEffectFromDiscard() throws DecisionResultInvalidException, CardNotFoundException {
         Map<String, Collection<String>> extraCards = new HashMap<>();

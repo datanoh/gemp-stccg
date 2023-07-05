@@ -1,6 +1,6 @@
 $(document).ready(
     function () {
-        var ui = new GempLotrDeckBuildingUI();
+        var ui = new GempStccg1EDeckBuildingUI();
 
         $('body').layout({
             applyDefaultStyles:true,
