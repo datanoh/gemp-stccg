@@ -19,8 +19,9 @@ var GempStccg1EDeckBuildingUI = Class.extend({
     selectionFunc:null,
     drawDeckDiv:null,
 
-    fpDeckGroup:null,
-    shadowDeckGroup:null,
+//    fpDeckGroup:null,
+//    shadowDeckGroup:null,
+    drawDeckGroup:null,
 
     start:0,
     count:18,
@@ -187,14 +188,17 @@ var GempStccg1EDeckBuildingUI = Class.extend({
         }, true);
 
         this.drawDeckDiv = $("#decksRegion");
-        this.fpDeckGroup = new NormalCardGroup(this.drawDeckDiv, function (card) {
+        this.drawDeckGroup = new NormalCardGroup(this.drawDeckDiv, function(card) {
+            return (card.zone == "DRAW_DECK");
+        });
+/*        this.fpDeckGroup = new NormalCardGroup(this.drawDeckDiv, function (card) {
             return (card.zone == "FREE_PEOPLE");
         });
         this.fpDeckGroup.maxCardHeight = 200;
         this.shadowDeckGroup = new NormalCardGroup(this.drawDeckDiv, function (card) {
             return (card.zone == "SHADOW");
         });
-        this.shadowDeckGroup.maxCardHeight = 200;
+        this.shadowDeckGroup.maxCardHeight = 200;*/
 
         this.bottomBarDiv = $("#statsDiv");
 
@@ -1098,8 +1102,9 @@ var GempStccg1EDeckBuildingUI = Class.extend({
             this.missionsGroup.setBounds(0, 0, missionsWidth, fullHeight);
 
             this.drawDeckDiv.css({ position:"absolute", left:padding * 2 + missionsWidth, top:divsTop, width:deckWidth - (missionsWidth + padding) - padding, height:fullHeight });
-            this.fpDeckGroup.setBounds(0, 0, deckWidth - (missionsWidth + padding) - padding, fullHeight / 2);
-            this.shadowDeckGroup.setBounds(0, (deckHeight - 2 * padding - 50) / 2, deckWidth - (missionsWidth + padding) - padding, fullHeight / 2);
+            this.drawDeckGroup.setBounds(0, 0, deckWidth - (missionsWidth + padding) - padding, fullHeight);
+//            this.fpDeckGroup.setBounds(0, 0, deckWidth - (missionsWidth + padding) - padding, fullHeight / 2);
+//            this.shadowDeckGroup.setBounds(0, (deckHeight - 2 * padding - 50) / 2, deckWidth - (missionsWidth + padding) - padding, fullHeight / 2);
 
             this.bottomBarDiv.css({ position:"absolute", left:padding * 2 + missionsWidth, top:manageHeight + padding + deckHeight - 50, width:deckWidth - (missionsWidth + padding) - padding, height:70 });
 
@@ -1119,8 +1124,9 @@ var GempStccg1EDeckBuildingUI = Class.extend({
 
     layoutDeck:function () {
         this.layoutSpecialGroups();
-        this.fpDeckGroup.layoutCards();
-        this.shadowDeckGroup.layoutCards();
+        this.drawDeckGroup.layoutcards();
+//        this.fpDeckGroup.layoutCards();
+//       this.shadowDeckGroup.layoutCards();
     },
 
     processError:function (xhr, ajaxOptions, thrownError) {
