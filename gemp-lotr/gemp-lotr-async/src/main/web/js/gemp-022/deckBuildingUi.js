@@ -1349,7 +1349,7 @@ var TribblesDeckBuildingUI = Class.extend({
 
         this.drawDeckDiv = $("#decksRegion");
         this.drawDeckGroup = new NormalCardGroup(this.drawDeckDiv, function (card) {
-            return (card.zone == "DRAW DECK");
+            return (card.zone == "DRAW_DECK");
         });
 
         this.bottomBarDiv = $("#statsDiv");
@@ -1960,7 +1960,7 @@ var TribblesDeckBuildingUI = Class.extend({
             var cardDiv = this.addCardToContainer(blueprintId, "special", container, false);
             cardDiv.addClass("cardInDeck");
             that.showNormalFilter();
-            that.layoutSpecialGroups();
+//            that.layoutSpecialGroups();
             that.deckModified(true);
         };
     },
@@ -2214,6 +2214,7 @@ var TribblesDeckBuildingUI = Class.extend({
             this.manageDecksDiv.css({position:"absolute", left:padding, top:padding, width:deckWidth, height:manageHeight});
 
             this.drawDeckDiv.css({ position:"absolute", left:padding * 2 + sitesWidth, top:manageHeight + 2 * padding, width:deckWidth - (sitesWidth + padding) - padding, height:deckHeight - 2 * padding - 50 });
+            this.drawDeckGroup.setBounds(0, 0, deckWidth - padding, deckHeight - padding);
 
             this.bottomBarDiv.css({ position:"absolute", left:padding * 2 + sitesWidth, top:manageHeight + padding + deckHeight - 50, width:deckWidth - (sitesWidth + padding) - padding, height:70 });
 
@@ -2228,7 +2229,8 @@ var TribblesDeckBuildingUI = Class.extend({
     },
 
     layoutDeck:function () {
-        this.layoutSpecialGroups();
+//        this.layoutSpecialGroups();
+        this.drawDeckGroup.layoutcards();
     },
 
     processError:function (xhr, ajaxOptions, thrownError) {
