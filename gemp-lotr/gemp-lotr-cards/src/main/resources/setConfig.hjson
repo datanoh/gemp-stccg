@@ -5,12 +5,12 @@
     rarityFile: "/set0-rarity.txt",
     needsLoading: false
   }
-  {
-    setId: "1",
-    setName: "The Fellowship of the Ring",
-    rarityFile: "/set1-rarity.txt",
-    needsLoading: false
-  }
+//  {
+//    setId: "1",
+//    setName: "The Fellowship of the Ring",
+//    rarityFile: "/set1-rarity.txt",
+//    needsLoading: false
+//  }
   {
     setId: "2",
     setName: "Mines of Moria",
@@ -552,13 +552,10 @@
   }
 
   {
-    setId: "200",
+    setId: "01",
     setName: "ST:CCG 1E Premiere",
-    rarityFile: "/set200-rarity.txt",
-    originalSet: false,
-    merchantable: false,
-    needsLoading: false,
-    playable: true
+    rarityFile: "/set01-rarity.txt",
+
   }
 
 ]
