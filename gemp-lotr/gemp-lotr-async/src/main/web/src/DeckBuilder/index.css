@@ -35,30 +35,6 @@
     width: 100px;
 }
 
-#ringBearerDiv {
-    position: absolute;
-    left: 5px;
-    top: 33px;
-    width: 89px;
-    height: 117px;
-}
-
-#ringDiv {
-    position: absolute;
-    left: 99px;
-    top: 33px;
-    width: 89px;
-    height: 117px;
-}
-
-#sitesDiv {
-    position: absolute;
-    left: 5px;
-    top: 155px;
-    width: 184px;
-    height: 489px;
-}
-
 #statsDiv {
     overflow: auto;
     position: absolute;
