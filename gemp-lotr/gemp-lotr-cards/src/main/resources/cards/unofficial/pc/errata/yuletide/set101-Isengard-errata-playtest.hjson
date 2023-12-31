@@ -255,7 +255,6 @@
 						amount: {
 							type: fromMemory
 							memory: attachedItems
-							limit: 3
 						}
 					}
 				]
@@ -263,39 +262,51 @@
 			{
 				type: activated
 				phase: shadow
-				requires: {
-					type: or
-					requires: [
-						{
-							type: canSpot
-							filter: item,side(free people)
-							count: 2
-						}
-						{
-							type: canSpot
-							filter: title(Saruman)
-						}
-					]
-				}
-				effect: {
-					type: choice
-					texts: [
-						Take an {isengard} item (artifact or possession) card from your draw deck
-						Take an {isengard} item (artifact or possession) card from your discard pile
-					]
-					effects: [
-						{
-							type: PutCardsFromDeckIntoHand
-							filter: choose(culture(isengard),item)
-							count: 1
-						}
-						{
-							type: PutCardsFromDiscardIntoHand
-							filter: choose(culture(isengard),item)
-							count: 1
-						}
-					]
-				}
+				requires: [
+					{
+						type: perPhaseLimit
+						limit: 1
+					}
+					{
+						type: or
+						requires: [
+							{
+								type: canSpot
+								filter: item,side(free people)
+								count: 2
+							}
+							{
+								type: canSpot
+								filter: title(Saruman)
+							}
+						]
+					}
+				]
+				effect: [
+					{
+						type: choice
+						texts: [
+							Take an {isengard} item (artifact or possession) card from your draw deck
+							Take an {isengard} item (artifact or possession) card from your discard pile
+						]
+						effects: [
+							{
+								type: PutCardsFromDeckIntoHand
+								filter: choose(culture(isengard),item)
+								count: 1
+							}
+							{
+								type: PutCardsFromDiscardIntoHand
+								filter: choose(culture(isengard),item)
+								count: 1
+							}
+						]
+					}
+					{
+						type: incrementPerPhaseLimit
+						limit: 1
+					}	
+				]
 			}
 		]
 		gametext: When you play this minion, spot a companion to add (1) for each Free Peoples card borne by that companion.<br>Shadow: Spot 2 Free Peoples items (or spot Saruman) to take an [isengard] item into hand from your draw deck or discard pile (limit once per phase).
@@ -358,43 +369,55 @@
 			{
 				type: activated
 				phase: shadow
-				requires: {
-					type: or
-					requires: [
-						{
-							type: canSpot
-							filter: condition,side(free people)
-							count: 3
-						}
-						{
-							type: canSpot
-							filter: title(Saruman)
-						}
-					]
-				}
+				requires: [
+					{
+						type: perPhaseLimit
+						limit: 1
+					}
+					{
+						type: or
+						requires: [
+							{
+								type: canSpot
+								filter: condition,side(free people)
+								count: 3
+							}
+							{
+								type: canSpot
+								filter: title(Saruman)
+							}
+						]
+					}
+				]
 				cost: {
 					type: discard
 					filter: self
 				}
-				effect: {
-					type: choice
-					texts: [
-						Take an {isengard} condition from your draw deck
-						Take an {isengard} condition from your discard pile
-					]
-					effects: [
-						{
-							type: PutCardsFromDeckIntoHand
-							filter: choose(culture(isengard),condition)
-							count: 1
-						}
-						{
-							type: PutCardsFromDiscardIntoHand
-							filter: choose(culture(isengard),condition)
-							count: 1
-						}
-					]
-				}
+				effect: [
+					{
+						type: choice
+						texts: [
+							Take an {isengard} condition from your draw deck
+							Take an {isengard} condition from your discard pile
+						]
+						effects: [
+							{
+								type: PutCardsFromDeckIntoHand
+								filter: choose(culture(isengard),condition)
+								count: 1
+							}
+							{
+								type: PutCardsFromDiscardIntoHand
+								filter: choose(culture(isengard),condition)
+								count: 1
+							}
+						]
+					}
+					{
+						type: incrementPerPhaseLimit
+						limit: 1
+					}	
+				]
 			}
 		]
 		gametext: While you can spot 3 Free Peoples conditions, this minion is twilight cost -3. <br>Shadow: Spot 3 Free Peoples conditions (or spot Saruman) to take an [isengard] condition into hand from your draw deck or discard pile (limit once per phase).
