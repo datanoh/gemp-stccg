@@ -37,6 +37,7 @@
 				modifier: {
 					type: cantTakeMoreWoundsThan
 					filter: hobbit,hasAttached(hand weapon)
+					phase: skirmish
 					amount: 1
 				}
 			}

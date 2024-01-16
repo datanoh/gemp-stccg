@@ -617,6 +617,14 @@ var PCCards = {
 	//Pippin Holiday Promo
 	'1_387'  : 'https://i.lotrtcgpc.net/promos/LOTR-EN01H307.1_card.jpg',
 	//Merry, Holiday Promo
-	'1_388'  : 'https://i.lotrtcgpc.net/promos/LOTR-EN01H302.1_card.jpg'
+	'1_388'  : 'https://i.lotrtcgpc.net/promos/LOTR-EN01H302.1_card.jpg',
+	
+	//December 2023 Gala
+	//Aragorn,Elessar Telcontar FA
+	'10_127'  : 'https://i.lotrtcgpc.net/promos/LOTR-EN10U025.0_card.jpg',
+	//Arwen, Queen of Elves and Men FA
+	'10_128'  : 'https://i.lotrtcgpc.net/promos/LOTR-EN10U006.0_card.jpg'
+	
+	
 }
 
