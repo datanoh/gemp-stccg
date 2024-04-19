@@ -10,6 +10,10 @@ var GempLotrDeckBuildingUI = Class.extend({
 
     ringDiv:null,
     ringGroup:null,
+    
+    mapDiv:null,
+    mapGroup:null,
+    showMap:false,
 
     siteDiv:null,
     siteGroup:null,
@@ -90,6 +94,13 @@ var GempLotrDeckBuildingUI = Class.extend({
         $("#formatSelect").change(
                 function () {
                     that.deckModified(true);
+                    let formatCode = that.formatSelect.val();
+                    if(formatCode == "pc_movie" || formatCode == "test_pc_movie") {
+                        that.setMapVisibility(true);
+                    }
+                    else {
+                        that.setMapVisibility(false);
+                    }
                 });
 
         var collectionSelect = $("#collectionSelect");
@@ -196,7 +207,7 @@ var GempLotrDeckBuildingUI = Class.extend({
                 });
         this.ringBearerGroup = new NormalCardGroup(this.ringBearerDiv, function (card) {
             return true;
-        });
+        }, false, $("#rb-content"));
 
         this.ringDiv = $("#ringDiv");
         this.ringDiv.click(
@@ -206,12 +217,22 @@ var GempLotrDeckBuildingUI = Class.extend({
                 });
         this.ringGroup = new NormalCardGroup(this.ringDiv, function (card) {
             return true;
-        });
+        }, false, $("#ring-content"));
+        
+        this.mapDiv = $("#map-div");
+        this.mapDiv.click(
+                function () {
+                    if ($(".card", that.mapDiv).length == 0)
+                        that.showPredefinedFilter("cardType:MAP type:card", that.mapDiv);
+                });
+        this.mapGroup = new NormalCardGroup(this.mapDiv, function (card) {
+            return true;
+        }, false, $("#map-content"));
 
         this.siteDiv = $("#sitesDiv");
         this.siteGroup = new VerticalBarGroup(this.siteDiv, function (card) {
             return true;
-        }, true);
+        }, false, $("#sites-content"));
 
         this.drawDeckDiv = $("#decksRegion");
         this.fpDeckGroup = new NormalCardGroup(this.drawDeckDiv, function (card) {
@@ -287,6 +308,11 @@ var GempLotrDeckBuildingUI = Class.extend({
         }, this.checkDirtyInterval);
         
         this.updateFormatOptions();
+    },
+    
+    setMapVisibility:function(value) {
+        this.showMap = value;
+        this.layoutUI(true);
     },
     
     renameCurrentDeck:function() {
@@ -1035,6 +1061,7 @@ var GempLotrDeckBuildingUI = Class.extend({
                 //$('#formatSelect option[value="' + formatName + '"]').prop('selected', true);
  
                 this.formatSelect.val(formatCode);
+                this.formatSelect.change();
             }
             
             var notes = root.getElementsByTagName("notes");
@@ -1124,12 +1151,24 @@ var GempLotrDeckBuildingUI = Class.extend({
 
             this.ringBearerDiv.css({ position:"absolute", left:padding, top:manageHeight + 2 * padding, width:Math.floor((sitesWidth - padding) / 2), height:rowHeight });
             this.ringBearerGroup.setBounds(0, 0, Math.floor((sitesWidth - padding) / 2), rowHeight);
-            this.ringDiv.css({ position:"absolute", left:Math.floor((sitesWidth + 3 * padding) / 2), top:manageHeight + 2 * padding, width:Math.floor((sitesWidth - padding) / 2), height:rowHeight });
+            this.ringDiv.css({ display:"block", position:"absolute", left:Math.floor((sitesWidth + 3 * padding) / 2), top:manageHeight + 2 * padding, width:Math.floor((sitesWidth - padding) / 2), height:rowHeight });
             this.ringGroup.setBounds(0, 0, Math.floor((sitesWidth - padding) / 2), rowHeight);
+            
+            if(this.showMap) {
+                this.mapDiv.css({ display:"block", position:"absolute", left:padding, top:manageHeight + 2 * padding+ rowHeight, width:Math.floor((sitesWidth - padding) / 2), height:rowHeight });
+                this.mapGroup.setBounds(0, 0, Math.floor((sitesWidth - padding) / 2), rowHeight);
 
-            this.siteDiv.css({ position:"absolute", left:padding, top:manageHeight + 3 * padding + rowHeight, width:sitesWidth, height:deckHeight - rowHeight - 2 * padding});
-            this.siteGroup.setBounds(0, 0, sitesWidth, deckHeight - rowHeight - 2 * padding);
+                this.siteDiv.css({ position:"absolute", left:padding, top:manageHeight + 3 * padding + 2 * rowHeight, width:sitesWidth, height:deckHeight - rowHeight - 2 * padding});
+                this.siteGroup.setBounds(0, 0, sitesWidth, deckHeight - 2*rowHeight - 2 * padding);
+            }
+            else {
+                this.mapDiv.css({ display:"none"});
+                this.mapGroup.setBounds(0, 0, Math.floor((sitesWidth - padding) / 2), rowHeight);
 
+                this.siteDiv.css({ position:"absolute", left:padding, top:manageHeight + 3 * padding + rowHeight, width:sitesWidth, height:deckHeight - rowHeight - 2 * padding});
+                this.siteGroup.setBounds(0, 0, sitesWidth, deckHeight - rowHeight - 2 * padding);
+            }
+            
             this.drawDeckDiv.css({ position:"absolute", left:padding * 2 + sitesWidth, top:manageHeight + 2 * padding, width:deckWidth - (sitesWidth + padding) - padding, height:deckHeight - 2 * padding - 50 });
             this.fpDeckGroup.setBounds(0, 0, deckWidth - (sitesWidth + padding) - padding, (deckHeight - 2 * padding - 50) / 2);
             this.shadowDeckGroup.setBounds(0, (deckHeight - 2 * padding - 50) / 2, deckWidth - (sitesWidth + padding) - padding, (deckHeight - 2 * padding - 50) / 2);
@@ -1150,6 +1189,9 @@ var GempLotrDeckBuildingUI = Class.extend({
         this.ringBearerGroup.layoutCards();
         this.ringGroup.layoutCards();
         this.siteGroup.layoutCards();
+        if(this.showMap) {
+            this.mapGroup.layoutCards();
+        }
     },
 
     layoutDeck:function () {

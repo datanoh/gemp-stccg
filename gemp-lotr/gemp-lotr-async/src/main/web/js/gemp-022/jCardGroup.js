@@ -9,15 +9,20 @@ var CardGroup = Class.extend({
     maxCardHeight:497,
     descDiv:null,
 
-    init:function (container, belongTest, createDiv) {
+    init:function (container, belongTest, createDiv, existingDiv) {
         this.container = container;
         this.belongTestFunc = belongTest;
 
         if (createDiv === undefined || createDiv) {
-            this.descDiv = $("<div class='ui-widget-content'></div>");
+            if(existingDiv !== undefined) {
+                this.descDiv = existingDiv;
+            }
+            else {
+                this.descDiv = $("<div class='ui-widget-content'></div>");
+                container.append(this.descDiv);
+            }
+            
             this.descDiv.css({"border-radius":"7px"});
-
-            container.append(this.descDiv);
         }
     },
 
@@ -59,8 +64,8 @@ var CardGroup = Class.extend({
 });
 
 var VerticalBarGroup = CardGroup.extend({
-    init:function (container, belongTest, createDiv) {
-        this._super(container, belongTest, createDiv);
+    init:function (container, belongTest, createDiv, existingDiv) {
+        this._super(container, belongTest, createDiv, existingDiv);
     },
 
     layoutCards:function () {
@@ -103,8 +108,8 @@ var VerticalBarGroup = CardGroup.extend({
 });
 
 var VerticalFlexGroup = CardGroup.extend({
-    init:function (container, belongTest, createDiv) {
-        this._super(container, belongTest, createDiv);
+    init:function (container, belongTest, createDiv, existingDiv) {
+        this._super(container, belongTest, createDiv, existingDiv);
     },
     
     setBounds:function (x, y, width, height) {
@@ -236,8 +241,8 @@ var AdvPathCardGroup = CardGroup.extend({
 
 var NormalCardGroup = CardGroup.extend({
 
-    init:function (container, belongTest, createDiv) {
-        this._super(container, belongTest, createDiv);
+    init:function (container, belongTest, createDiv, existingDiv) {
+        this._super(container, belongTest, createDiv, existingDiv);
     },
 
     layoutCards:function () {
@@ -396,8 +401,8 @@ var NormalCardGroup = CardGroup.extend({
 
 var NormalFlexGroup = CardGroup.extend({
 
-    init:function (container, belongTest, createDiv) {
-        this._super(container, belongTest, createDiv);
+    init:function (container, belongTest, createDiv, existingDiv) {
+        this._super(container, belongTest, createDiv, existingDiv);
     },
     
     setBounds:function (x, y, width, height) {
