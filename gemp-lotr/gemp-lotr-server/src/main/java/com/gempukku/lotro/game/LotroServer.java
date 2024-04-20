@@ -188,7 +188,7 @@ public class LotroServer extends AbstractServer {
                     cnt++;
             }
 
-            if (cnt != 3)
+            if (cnt < 3 || cnt > 4)
                 return null;
 
             return _deckDao.buildDeckFromContents(deckName, contents, targetFormat, notes);

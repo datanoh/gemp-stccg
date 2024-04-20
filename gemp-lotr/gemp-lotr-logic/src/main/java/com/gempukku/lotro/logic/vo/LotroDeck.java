@@ -7,6 +7,7 @@ import java.util.List;
 public class LotroDeck {
     private String _ringBearer;
     private String _ring;
+    private String _map;
     private final List<String> _siteCards = new ArrayList<>();
     private final List<String> _nonSiteCards = new ArrayList<>();
     private final String _deckName;
@@ -29,6 +30,7 @@ public class LotroDeck {
     public void setRing(String ring) {
         _ring = ring;
     }
+    public void setMap(String map) { _map = map; }
 
     public void addCard(String card) {
         _nonSiteCards.add(card);
@@ -38,7 +40,7 @@ public class LotroDeck {
         _siteCards.add(card);
     }
 
-    public List<String> getAdventureCards() {
+    public List<String> getDrawDeckCards() {
         return Collections.unmodifiableList(_nonSiteCards);
     }
 
@@ -52,6 +54,10 @@ public class LotroDeck {
 
     public String getRing() {
         return _ring;
+    }
+
+    public String getMap() {
+        return _map;
     }
 
     public String getTargetFormat() { return _targetFormat; }

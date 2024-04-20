@@ -23,7 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -602,7 +601,7 @@ public class HallServer extends AbstractServer {
             for (String site : lotroDeck.getSites())
                 filteredSpecialCardsDeck.addSite(filterCard(site, ownedCollection));
 
-            for (Map.Entry<String, Integer> cardCount : CollectionUtils.getTotalCardCount(lotroDeck.getAdventureCards()).entrySet()) {
+            for (Map.Entry<String, Integer> cardCount : CollectionUtils.getTotalCardCount(lotroDeck.getDrawDeckCards()).entrySet()) {
                 String blueprintId = cardCount.getKey();
                 int count = cardCount.getValue();
 

@@ -62,7 +62,7 @@ public class DefaultLotroGame implements LotroGame {
 
             LotroDeck lotroDeck = decks.get(playerId);
             deck.addAll(lotroDeck.getSites());
-            deck.addAll(lotroDeck.getAdventureCards());
+            deck.addAll(lotroDeck.getDrawDeckCards());
 
             cards.put(playerId, deck);
             ringBearers.put(playerId, lotroDeck.getRingBearer());

@@ -842,6 +842,15 @@ var GempLotrDeckBuildingUI = Class.extend({
                     cards.push($(this).data("card").blueprintId);
                 });
         result += cards;
+        
+        let formatCode = this.formatSelect.val();
+        if(formatCode == "pc_movie" || formatCode == "test_pc_movie") {
+            result += "|";
+            var map = $(".card", this.mapDiv);
+            if (map.length > 0)
+                result += map.data("card").blueprintId;
+        }
+        
 
         return result;
     },
@@ -1075,6 +1084,10 @@ var GempLotrDeckBuildingUI = Class.extend({
             if (ring.length > 0)
                 this.addCardToContainer(ring[0].getAttribute("blueprintId"), "deck", this.ringDiv, false).addClass("cardInDeck");
 
+            var map = root.getElementsByTagName("map");
+            if (map.length > 0)
+                this.addCardToContainer(map[0].getAttribute("blueprintId"), "deck", this.mapDiv, false).addClass("cardInDeck");
+
             var sites = root.getElementsByTagName("site");
             for (var i = 0; i < sites.length; i++)
                 this.addCardToContainer(sites[i].getAttribute("blueprintId"), "deck", this.siteDiv, false).addClass("cardInDeck");
@@ -1158,7 +1171,7 @@ var GempLotrDeckBuildingUI = Class.extend({
                 this.mapDiv.css({ display:"block", position:"absolute", left:padding, top:manageHeight + 2 * padding+ rowHeight, width:Math.floor((sitesWidth - padding) / 2), height:rowHeight });
                 this.mapGroup.setBounds(0, 0, Math.floor((sitesWidth - padding) / 2), rowHeight);
 
-                this.siteDiv.css({ position:"absolute", left:padding, top:manageHeight + 3 * padding + 2 * rowHeight, width:sitesWidth, height:deckHeight - rowHeight - 2 * padding});
+                this.siteDiv.css({ position:"absolute", left:padding, top:manageHeight + 3 * padding + 2 * rowHeight, width:sitesWidth, height:deckHeight - 2*rowHeight - 2 * padding});
                 this.siteGroup.setBounds(0, 0, sitesWidth, deckHeight - 2*rowHeight - 2 * padding);
             }
             else {
