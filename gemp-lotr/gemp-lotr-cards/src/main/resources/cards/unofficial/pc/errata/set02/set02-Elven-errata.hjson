@@ -1,6 +1,5 @@
 {
-
-	72_20: {
+	52_20: {
 		cardInfo: {
 			imagePath: errata/LOTR-EN02E020.1_card.jpg
 			javaClass: false

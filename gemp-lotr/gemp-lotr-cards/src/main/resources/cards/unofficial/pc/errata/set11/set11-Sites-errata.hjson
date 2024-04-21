@@ -52,13 +52,100 @@
 		}
 	}
 
-	61_232: {
+	# 61_232: {
+	# 	cardInfo: {
+	# 		imagePath: errata/LOTR-EN11E232.1.jpg
+	# 		javaClass: false
+	# 		parent: 11_232
+	# 		parentPath: errata/pc
+	# 		version: 1
+	# 		collInfo: 11S232
+	# 		rarity: S
+	# 		setNum: "11"
+	# 		cardNum: 232
+	# 		// Standard, Masterwork, Tengwar, FullArt, etc.  Top-level cards are always Standard.
+	# 		style: Standard
+	# 	}
+	# 	title: Cavern Entrance
+	# 	unique: false
+	# 	twilight: 1
+	# 	type: Site
+	# 	block: Shadows
+	# 	direction: Left
+	# 	keywords: [
+	# 		underground
+	# 	]
+	# 	effects: {
+	# 		type: trigger
+	# 		trigger: {
+	# 			type: startOfPhase
+	# 			phase: skirmish
+	# 		}
+	# 		effect: [
+	# 			{
+	# 				type: ForEachPlayer
+	# 				effect: [
+	# 					{
+	# 						type: conditional
+	# 						requires: {
+	# 							type: CanSpot
+	# 							filter: your,InSkirmish,character,not(exhausted)
+	# 						}
+	# 						effect: [
+	# 							{
+	# 								type: chooseYesOrNo
+	# 								text: Would you like to exert your skirmishing character to prevent all special abilities from being used this skirmish?
+	# 								memorize: choice
+	# 							}
+	# 							{
+	# 								type: conditional
+	# 								requires: {
+	# 									type: memoryIs
+	# 									memory: choice
+	# 									value: yes
+	# 								}
+	# 								effect: {
+	# 									type: CostToEffect
+	# 									cost: {
+	# 										type: exert
+	# 										filter: choose(your,character,InSkirmish)
+	# 									}
+	# 									effect: [
+	# 										{
+	# 											type: addmodifier
+	# 											modifier: {
+	# 												type: cantUseSpecialAbilities
+	# 												filter: or(side(freeps),side(shadow),site,the one ring)
+	# 											}
+	# 											until: end(skirmish)
+	# 										}
+	# 									]
+	# 								}
+	# 							}
+	# 						]
+	# 					}
+	# 				]
+	# 			}
+	# 		]
+	# 	}
+	# 	gametext: <b>Underground.</b> At the start of each skirmish, you may exert your character in that skirmish to prevent special abilities being used.
+	# 	lore: ""
+	# 	promotext: ""
+	# 	alts: {
+	# 		promos: {
+	# 		}
+	# 		errata: {
+	# 		}
+	# 	}
+	# }
+
+61_232: {
 		cardInfo: {
 			imagePath: errata/LOTR-EN11E232.1.jpg
 			javaClass: false
 			parent: 11_232
 			parentPath: errata/pc
-			version: 1
+			version: 2
 			collInfo: 11S232
 			rarity: S
 			setNum: "11"
@@ -71,10 +158,7 @@
 		twilight: 1
 		type: Site
 		block: Shadows
-		direction: Left
-		keywords: [
-			underground
-		]
+		direction: Right
 		effects: {
 			type: trigger
 			trigger: {
@@ -128,7 +212,7 @@
 				}
 			]
 		}
-		gametext: <b>Underground.</b> At the start of each skirmish, you may exert your character in that skirmish to prevent special abilities being used.
+		gametext: At the start of each skirmish, you may exert your character in that skirmish to prevent special abilities being used.
 		lore: ""
 		promotext: ""
 		alts: {
@@ -138,7 +222,7 @@
 			}
 		}
 	}
-
+	
 	61_249: {
 		cardInfo: {
 			imagePath: errata/LOTR-EN11E249.1.jpg

@@ -1,24 +1,24 @@
 {
-
-	81_232: {
+	54_355: {
 		cardInfo: {
-			imagePath: errata/LOTR-EN11E232.1.jpg
+			imagePath: errata/LOTR-EN04E355.1_card.jpg
 			javaClass: false
-			parent: 11_232
+			parent: 4_355
 			parentPath: errata/pc
-			version: 2
-			collInfo: 11S232
-			rarity: S
-			setNum: "11"
-			cardNum: 232
+			version: 1
+			collInfo: 4U355
+			rarity: U
+			setNum: "4"
+			cardNum: 355
 			// Standard, Masterwork, Tengwar, FullArt, etc.  Top-level cards are always Standard.
 			style: Standard
 		}
 		title: Cavern Entrance
 		unique: false
-		twilight: 1
+		twilight: 7
 		type: Site
-		block: Shadows
+		site: 7
+		block: Towers
 		direction: Right
 		effects: {
 			type: trigger

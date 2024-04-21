@@ -194,7 +194,7 @@
 			javaClass: false
 			parent: 1_139
 			parentPath: errata/pc
-			version: 2
+			version: 3
 			collInfo: 1R139
 			rarity: R
 			setNum: "1"
@@ -204,7 +204,7 @@
 		}
 		title: Savagery To Match Their Numbers
 		culture: isengard
-		twilight: 2
+		twilight: 1
 		type: event
 		keyword: skirmish
 		effects: {

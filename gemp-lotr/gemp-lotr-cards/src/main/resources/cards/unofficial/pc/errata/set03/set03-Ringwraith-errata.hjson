@@ -80,5 +80,98 @@
 		}
 	}
 	
-	
+	73_85: {
+		cardInfo: {
+			imagePath: errata/LOTR-EN03E085.1_card.jpg
+			javaClass: false
+			parent: 3_85
+			parentPath: errata/pc
+			version: 1
+			collInfo: 3R85
+			rarity: R
+			setNum: "3"
+			cardNum: 85
+			// Standard, Masterwork, Tengwar, FullArt, etc.  Top-level cards are always Standard.
+			style: Standard
+		}
+		title: Too Great and Terrible
+		unique: false
+		side: Shadow
+		culture: Wraith
+		twilight: 1
+		type: Condition
+		target: or(companion,ally)
+		effects: [
+			{
+				type: ExtraCost
+				cost: {
+					type: exert
+					filter: choose(culture(ringwraith), minion)
+				}
+			}
+			{
+				type: modifier
+				modifier: {
+					type: CantBeExerted
+					filter: bearer
+					by: side(freeps)
+				}
+			}
+			{
+				type: Trigger
+				trigger: {
+					type: StartOfPhase
+					phase: regroup
+				}
+				effect: [
+					{
+						# We do this just to make the option prompt a
+						# little more elegant.
+						type: Memorize
+						filter: bearer
+						memory: bearer
+					}
+					{
+						type: Conditional
+						requires: {
+							type: HasCardInHand
+							player: freeps
+							count: 1
+							filter: CultureFromMemory(bearer)
+						}
+						effect: {
+							type: Optional
+							player: freeps
+							text: Would you like to discard 1 card from hand matching {bearer}'s culture to discard Too Great and Terrible?
+							effect: {
+								type: CostToEffect
+								cost: {
+									type: DiscardFromHand
+									player: freeps
+									hand: freeps
+									forced: false
+									count: 1
+									filter: choose(CultureFromMemory(bearer))
+								}
+								effect: {
+									type: Discard
+									filter: self
+								}
+							}
+						}
+					}
+					
+				]
+			}
+		]
+		gametext: To play, exert a [ringwraith] minion.  Bearer must be a companion or ally. Bearer cannot be exerted by Free Peoples cards.<br>At the start of the regroup phase, the Free Peoples player may discard 1 card from hand of bearer's culture to discard this condition.
+		lore: “‘I do not wish to become like the Dark Lord himself.'”
+		promotext: ""
+		alts: {
+			promos: {
+			}
+			errata: {
+			}
+		}
+	}
 }

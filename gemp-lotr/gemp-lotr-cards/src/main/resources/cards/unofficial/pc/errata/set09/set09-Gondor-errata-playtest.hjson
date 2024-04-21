@@ -1,6 +1,5 @@
 {
-
-	79_31: {
+	59_31: {
 		cardInfo: {
 			imagePath: errata/LOTR-EN09E031.1_card.jpg
 			javaClass: false
@@ -79,7 +78,7 @@
 		}
 	}
 
-	79_33: {
+	59_33: {
 		cardInfo: {
 			imagePath: errata/LOTR-EN09E033.1_card.jpg
 			javaClass: false
