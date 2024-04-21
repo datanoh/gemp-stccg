@@ -4,11 +4,13 @@ import com.gempukku.lotro.common.Zone;
 import com.gempukku.lotro.logic.decisions.AwaitingDecision;
 import com.gempukku.lotro.logic.timing.GameStats;
 import com.gempukku.lotro.logic.vo.LotroDeck;
+import com.mysql.cj.LicenseConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +50,16 @@ public class EventSerializer {
             eventElem.setAttribute("version", gameEvent.getVersion().toString());
         if (gameEvent.getType() == GameEvent.Type.PARTICIPANTS)
             eventElem.setAttribute("discardPublic", String.valueOf(gameEvent.isDiscardPublic()));
+        if(gameEvent.getType() == GameEvent.Type.PRE_GAME_SETUP) {
+            var preGameInfo = gameEvent.getPreGameInfo();
+            eventElem.setAttribute("summary", preGameInfo.getGameSummary());
+            eventElem.setAttribute("notes", preGameInfo.perPlayerNotes(gameEvent.getParticipantId()));
+            var maps = mapToString(preGameInfo.maps());
+            if(maps != null) {
+                eventElem.setAttribute("maps", maps);
+            }
+
+        }
         if (gameEvent.getGameStats() != null)
             serializeGameStats(doc, eventElem, gameEvent.getGameStats());
         if (gameEvent.getAwaitingDecision() != null)
@@ -70,6 +82,19 @@ public class EventSerializer {
                 return b.toString();
             b.append(",");
         }
+    }
+
+    private static String mapToString(Map<String, String> map) {
+        if(map == null)
+            return null;
+
+        var pairs = new ArrayList<String>();
+
+        for(var key : map.keySet()) {
+            pairs.add(key + ":" + map.get(key));
+        }
+
+        return String.join(",", pairs);
     }
 
     private static String listToCommaSeparated(List<String> strings) {

@@ -598,6 +598,10 @@ public class HallServer extends AbstractServer {
                 filteredSpecialCardsDeck.setRing(filterCard(lotroDeck.getRing(), ownedCollection));
             filteredSpecialCardsDeck.setRingBearer(filterCard(lotroDeck.getRingBearer(), ownedCollection));
 
+            if(format.usesMaps() && lotroDeck.getMap() != null) {
+                filteredSpecialCardsDeck.setMap(filterCard(lotroDeck.getMap(), ownedCollection));
+            }
+
             for (String site : lotroDeck.getSites())
                 filteredSpecialCardsDeck.addSite(filterCard(site, ownedCollection));
 

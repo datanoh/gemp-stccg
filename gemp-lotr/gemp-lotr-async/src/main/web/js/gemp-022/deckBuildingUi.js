@@ -402,7 +402,7 @@ var GempLotrDeckBuildingUI = Class.extend({
             if (rawTextList[i] != "") {
                 var line = that.removeNotes(rawTextList[i]).toLowerCase();
                 line = line.replace(/[\*•]/g,"").replace(/’/g,"'")
-                        .replace(/starting|start|ring-bearer:|ring:/g,"")
+                        .replace(/starting|start|map:|ring-bearer:|ring:/g,"")
                 formattedText = formattedText + line.trim() + "~";
             }
         }
@@ -420,6 +420,8 @@ var GempLotrDeckBuildingUI = Class.extend({
                         that.addCardToContainer(blueprintId, "special", that.ringBearerDiv, false).addClass("cardInDeck");
                     } else if (group == "ring") {
                         that.addCardToContainer(blueprintId, "special", that.ringDiv, false).addClass("cardInDeck");
+                    } else if (group == "map") {
+                        that.addCardToContainer(blueprintId, "special", that.mapDiv, false).addClass("cardInDeck");
                     } else {
                         that.addCardToDeckDontLayout(blueprintId, side);
                     }

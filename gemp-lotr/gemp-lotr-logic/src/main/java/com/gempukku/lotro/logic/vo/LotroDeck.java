@@ -1,6 +1,9 @@
 package com.gempukku.lotro.logic.vo;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -69,5 +72,19 @@ public class LotroDeck {
 
     public void setNotes(String value) {
         _notes = value;
+    }
+
+    public String getURL(String owner) {
+        return GenerateDeckSharingURL(_deckName, owner);
+    }
+    public static String GenerateDeckSharingURL(String deckName, String owner) {
+        var url = "/share/deck?id=";
+
+        String code = owner + "|" + deckName;
+
+        String base64 = Base64.getEncoder().encodeToString(code.getBytes(StandardCharsets.UTF_8));
+        String result = URLEncoder.encode(base64, StandardCharsets.UTF_8);
+
+        return url + result;
     }
 }

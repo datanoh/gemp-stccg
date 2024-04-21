@@ -479,6 +479,9 @@ public class DefaultLotroFormat implements LotroFormat {
         if (deck.getRing() != null) {
             deckWithErrata.setRing(applyErrata(deck.getRing()));
         }
+        if (deck.getMap() != null) {
+            deckWithErrata.setMap(applyErrata(deck.getMap()));
+        }
         for (String card : deck.getDrawDeckCards()) {
             deckWithErrata.addCard(applyErrata(card));
         }

@@ -72,7 +72,7 @@ public class DeckBuildingRestrictionGameTextProcessor implements EffectProcessor
                             + failureMsg + ".  ";
 
                     if(found.size() > max || found.size() < min)
-                        return new Result(false, fullFailureMsg + "Found " + found.size() + ": "
+                        return new Result(false, fullFailureMsg + "Found " + found.size() + " issues: "
                                 + found.stream().map(GameUtils::getFullName).collect(Collectors.joining(", ")));
 
                     return new Result(true, successMsg);

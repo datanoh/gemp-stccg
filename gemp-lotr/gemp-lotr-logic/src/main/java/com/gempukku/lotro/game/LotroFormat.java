@@ -8,6 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 public interface LotroFormat {
+    String PCSummary = """
+        As a reminder, PC formats incorporate the following changes:
+         <br/>- <a href="https://wiki.lotrtcgpc.net/wiki/PC_Errata" target="_blank">PC Errata are in effect</a>
+         <br/>- Set V1 is legal
+         <br/>- Discard piles are public information for both sides
+         <br/>- The game ends after Regroup actions are made (instead of at the start of Regroup)
+        """;
+
     boolean isOrderedSites();
 
     boolean canCancelRingBearerSkirmish();

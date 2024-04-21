@@ -260,10 +260,7 @@ public class DeckRequestHandler extends LotroServerRequestHandler implements Uri
         String deckName = getQueryParameterSafely(queryDecoder, "deckName");
         Player resourceOwner = getResourceOwnerSafely(request, participantId);
 
-        String code = resourceOwner.getName() + "|" + deckName;
-
-        String base64 = Base64.getEncoder().encodeToString(code.getBytes(StandardCharsets.UTF_8));
-        String result = URLEncoder.encode(base64, StandardCharsets.UTF_8);
+        var result = LotroDeck.GenerateDeckSharingURL(deckName, resourceOwner.getName());
 
         responseWriter.writeHtmlResponse(result);
     }
@@ -367,6 +364,13 @@ public class DeckRequestHandler extends LotroServerRequestHandler implements Uri
         String ring = deck.getRing();
         if (ring != null)
             result.append("<b>Ring:</b> " + generateCardTooltip(_library.getLotroCardBlueprint(ring), ring) + "<br/>");
+
+        var format = _formatLibrary.getFormatByName(deck.getTargetFormat());
+        if(format != null && format.usesMaps()) {
+            String map = deck.getMap();
+            if(map != null)
+                result.append("<b>Map:</b> " + generateCardTooltip(_library.getLotroCardBlueprint(map), map) + "<br/>");
+        }
 
         DefaultCardCollection deckCards = new DefaultCardCollection();
         for (String card : deck.getDrawDeckCards())
