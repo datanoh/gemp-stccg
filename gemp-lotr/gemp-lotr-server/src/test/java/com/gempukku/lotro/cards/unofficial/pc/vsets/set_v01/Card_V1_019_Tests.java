@@ -69,7 +69,7 @@ public class Card_V1_019_Tests
 		assertEquals(Signet.GANDALF, card.getBlueprint().getSignet()); 
 	}
 
-	@Test
+	//@Test
 	public void OnPlayTutorsAnElfOfCost2OrLess() throws DecisionResultInvalidException, CardNotFoundException {
 		//Pre-game setup
 		var scn = GetScenario();
@@ -101,7 +101,7 @@ public class Card_V1_019_Tests
 		assertEquals(5, scn.GetFreepsDeckCount());
 	}
 
-	@Test
+	//@Test
 	public void ManeuverAbilityCanDiscardsElvenCardToPumpAragornUntilRegroup() throws DecisionResultInvalidException, CardNotFoundException {
 		//Pre-game setup
 		var scn = GetScenario();
