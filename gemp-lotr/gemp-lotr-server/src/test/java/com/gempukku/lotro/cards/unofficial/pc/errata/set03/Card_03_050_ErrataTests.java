@@ -1,8 +1,9 @@
-package com.gempukku.lotro.cards.unofficial.pc.vsets.set_v01;
+package com.gempukku.lotro.cards.unofficial.pc.errata.set03;
 
 import com.gempukku.lotro.cards.GenericCardTestHelper;
 import com.gempukku.lotro.common.*;
 import com.gempukku.lotro.game.CardNotFoundException;
+import com.gempukku.lotro.game.PhysicalCardImpl;
 import com.gempukku.lotro.logic.decisions.DecisionResultInvalidException;
 import org.junit.Test;
 
@@ -10,14 +11,14 @@ import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
-public class Card_V1_025_Tests
+public class Card_03_050_ErrataTests
 {
 
 	protected GenericCardTestHelper GetScenario() throws CardNotFoundException, DecisionResultInvalidException {
 		return new GenericCardTestHelper(
 				new HashMap<>()
 				{{
-					put("card", "101_25");
+					put("card", "53_50");
 					// put other cards in here as needed for the test case
 				}},
 				GenericCardTestHelper.FellowshipSites,
@@ -27,44 +28,38 @@ public class Card_V1_025_Tests
 	}
 
 	@Test
-	public void CrebainFlockStatsAndKeywordsAreCorrect() throws DecisionResultInvalidException, CardNotFoundException {
+	public void CanYouProtectMeFromYourselfStatsAndKeywordsAreCorrect() throws DecisionResultInvalidException, CardNotFoundException {
 
 		/**
-		 * Set: V1
-		 * Name: Crebain Flock
+		 * Set: 3
+		 * Name: Can You Protect Me From Yourself?
 		 * Unique: False
 		 * Side: Shadow
 		 * Culture: Isengard
-		 * Twilight Cost: 2
-		 * Type: Minion
-		 * Subtype: Crow
-		 * Strength: 2
-		 * Vitality: 3
-		 * Site Number: 4
-		 * Game Text: This minion is twilight cost -1 for each companion you can spot over 3.
-		* 	Shadow: Spot 2 wounded companions (or spot Saruman) to take an [isengard] weather into hand from your draw deck or discard pile (limit once per phase).
+		 * Twilight Cost: 1
+		 * Type: Condition
+		 * Subtype: 
+		 * Game Text: Bearer must be a companion or ally.
+		* 	Each time bearer wins a skirmish against an [isengard] minion, add a burden.
+		* 	At the start of the regroup phase, the Free Peoples player may exert bearer twice to discard this condition.
 		*/
 
 		var scn = GetScenario();
 
 		var card = scn.GetFreepsCard("card");
 
-		assertEquals("Crebain Flock", card.getBlueprint().getTitle());
+		assertEquals("Can You Protect Me From Yourself?", card.getBlueprint().getTitle());
 		assertNull(card.getBlueprint().getSubtitle());
 		assertFalse(card.getBlueprint().isUnique());
 		assertEquals(Side.SHADOW, card.getBlueprint().getSide());
 		assertEquals(Culture.ISENGARD, card.getBlueprint().getCulture());
-		assertEquals(CardType.MINION, card.getBlueprint().getCardType());
-		assertEquals(Race.CROW, card.getBlueprint().getRace());
-		assertEquals(2, card.getBlueprint().getTwilightCost());
-		assertEquals(2, card.getBlueprint().getStrength());
-		assertEquals(3, card.getBlueprint().getVitality());
-		assertEquals(4, card.getBlueprint().getSiteNumber());
+		assertEquals(CardType.CONDITION, card.getBlueprint().getCardType());
+		assertEquals(1, card.getBlueprint().getTwilightCost());
 	}
 
 	// Uncomment any @Test markers below once this is ready to be used
 	//@Test
-	public void CrebainFlockTest1() throws DecisionResultInvalidException, CardNotFoundException {
+	public void CanYouProtectMeFromYourselfTest1() throws DecisionResultInvalidException, CardNotFoundException {
 		//Pre-game setup
 		var scn = GetScenario();
 
@@ -74,6 +69,6 @@ public class Card_V1_025_Tests
 		scn.StartGame();
 		scn.FreepsPlayCard(card);
 
-		assertEquals(2, scn.GetTwilight());
+		assertEquals(1, scn.GetTwilight());
 	}
 }

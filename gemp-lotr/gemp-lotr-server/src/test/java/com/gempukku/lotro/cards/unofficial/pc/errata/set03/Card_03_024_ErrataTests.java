@@ -1,8 +1,9 @@
-package com.gempukku.lotro.cards.unofficial.pc.vsets.set_v01;
+package com.gempukku.lotro.cards.unofficial.pc.errata.set03;
 
 import com.gempukku.lotro.cards.GenericCardTestHelper;
 import com.gempukku.lotro.common.*;
 import com.gempukku.lotro.game.CardNotFoundException;
+import com.gempukku.lotro.game.PhysicalCardImpl;
 import com.gempukku.lotro.logic.decisions.DecisionResultInvalidException;
 import org.junit.Test;
 
@@ -10,14 +11,14 @@ import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
-public class Card_V1_028_Tests
+public class Card_03_024_ErrataTests
 {
 
 	protected GenericCardTestHelper GetScenario() throws CardNotFoundException, DecisionResultInvalidException {
 		return new GenericCardTestHelper(
 				new HashMap<>()
 				{{
-					put("card", "101_28");
+					put("card", "53_24");
 					// put other cards in here as needed for the test case
 				}},
 				GenericCardTestHelper.FellowshipSites,
@@ -27,40 +28,36 @@ public class Card_V1_028_Tests
 	}
 
 	@Test
-	public void JustaWispofCloudStatsAndKeywordsAreCorrect() throws DecisionResultInvalidException, CardNotFoundException {
+	public void PhialofGaladrielStatsAndKeywordsAreCorrect() throws DecisionResultInvalidException, CardNotFoundException {
 
 		/**
-		 * Set: V1
-		 * Name: Just a Wisp of Cloud
-		 * Unique: False
-		 * Side: Shadow
-		 * Culture: Isengard
+		 * Set: 3
+		 * Name: Phial of Galadriel
+		 * Unique: True
+		 * Side: Free Peoples
+		 * Culture: Elven
 		 * Twilight Cost: 0
-		 * Type: Event
-		 * Subtype: Shadow
-		 * Game Text: Spell. Weather. 
-		* 	Discard a Free Peoples card from hand to play Saruman from your draw deck or discard pile; his twilight cost is -1 for each Crow you can spot.
+		 * Type: Artifact
+		 * Subtype: 
+		 * Game Text: To play, exert an Elf.  Bearer must be the Ring-bearer. <br>Bearer’s resistance is +2.
 		*/
 
 		var scn = GetScenario();
 
 		var card = scn.GetFreepsCard("card");
 
-		assertEquals("Just a Wisp of Cloud", card.getBlueprint().getTitle());
+		assertEquals("Phial of Galadriel", card.getBlueprint().getTitle());
 		assertNull(card.getBlueprint().getSubtitle());
-		assertFalse(card.getBlueprint().isUnique());
-		assertEquals(Side.SHADOW, card.getBlueprint().getSide());
-		assertEquals(Culture.ISENGARD, card.getBlueprint().getCulture());
-		assertEquals(CardType.EVENT, card.getBlueprint().getCardType());
-		assertTrue(scn.HasKeyword(card, Keyword.SPELL));
-		assertTrue(scn.HasKeyword(card, Keyword.WEATHER));
-		assertTrue(scn.HasKeyword(card, Keyword.SHADOW));
+		assertTrue(card.getBlueprint().isUnique());
+		assertEquals(Side.FREE_PEOPLE, card.getBlueprint().getSide());
+		assertEquals(Culture.ELVEN, card.getBlueprint().getCulture());
+		assertEquals(CardType.ARTIFACT, card.getBlueprint().getCardType());
 		assertEquals(0, card.getBlueprint().getTwilightCost());
 	}
 
 	// Uncomment any @Test markers below once this is ready to be used
 	//@Test
-	public void JustaWispofCloudTest1() throws DecisionResultInvalidException, CardNotFoundException {
+	public void PhialofGaladrielTest1() throws DecisionResultInvalidException, CardNotFoundException {
 		//Pre-game setup
 		var scn = GetScenario();
 

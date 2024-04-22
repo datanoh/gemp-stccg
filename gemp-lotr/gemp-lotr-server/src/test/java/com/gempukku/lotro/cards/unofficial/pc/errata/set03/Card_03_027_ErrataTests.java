@@ -1,4 +1,4 @@
-package com.gempukku.lotro.cards.unofficial.pc.errata.set11;
+package com.gempukku.lotro.cards.unofficial.pc.errata.set03;
 
 import com.gempukku.lotro.cards.GenericCardTestHelper;
 import com.gempukku.lotro.common.*;
@@ -11,14 +11,14 @@ import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
-public class Card_11_232_ErrataTests
+public class Card_03_027_ErrataTests
 {
 
 	protected GenericCardTestHelper GetScenario() throws CardNotFoundException, DecisionResultInvalidException {
 		return new GenericCardTestHelper(
 				new HashMap<>()
 				{{
-					put("card", "61_232");
+					put("card", "53_27");
 					// put other cards in here as needed for the test case
 				}},
 				GenericCardTestHelper.FellowshipSites,
@@ -28,38 +28,40 @@ public class Card_11_232_ErrataTests
 	}
 
 	@Test
-	public void CavernEntranceStatsAndKeywordsAreCorrect() throws DecisionResultInvalidException, CardNotFoundException {
+	public void VilyaStatsAndKeywordsAreCorrect() throws DecisionResultInvalidException, CardNotFoundException {
 
 		/**
-		 * Set: 11
-		 * Name: Cavern Entrance
-		 * Unique: False
-		 * Side: 
-		 * Culture: 
-		 * Shadow Number: 1
-		 * Type: Site
-		 * Subtype: Standard
-		 * Site Number: *
-		 * Game Text: At the start of each skirmish, you may exert your character in that skirmish to prevent special abilities being used.
+		 * Set: 3
+		 * Name: Vilya
+		 * Unique: True
+		 * Side: Free Peoples
+		 * Culture: Elven
+		 * Twilight Cost: 1
+		 * Type: Artifact
+		 * Subtype: Ring
+		 * Vitality: 1
+		 * Game Text: Bearer must be Elrond.
+		* 	Maneuver: Exert bearer twice and spot a Shadow condition to return that condition to its owner's hand.  That player may discard a card from hand.
 		*/
 
 		var scn = GetScenario();
 
-		//Use this once you have set the deck up properly
-		//var card = scn.GetFreepsSite();
 		var card = scn.GetFreepsCard("card");
 
-		assertEquals("Cavern Entrance", card.getBlueprint().getTitle());
+		assertEquals("Vilya", card.getBlueprint().getTitle());
 		assertNull(card.getBlueprint().getSubtitle());
-		assertFalse(card.getBlueprint().isUnique());
-		assertEquals(CardType.SITE, card.getBlueprint().getCardType());
+		assertTrue(card.getBlueprint().isUnique());
+		assertEquals(Side.FREE_PEOPLE, card.getBlueprint().getSide());
+		assertEquals(Culture.ELVEN, card.getBlueprint().getCulture());
+		assertEquals(CardType.ARTIFACT, card.getBlueprint().getCardType());
+		assertTrue(card.getBlueprint().getPossessionClasses().contains(PossessionClass.RING));
 		assertEquals(1, card.getBlueprint().getTwilightCost());
-		assertEquals(SitesBlock.SHADOWS, card.getBlueprint().getSiteBlock());
+		assertEquals(1, card.getBlueprint().getVitality());
 	}
 
 	// Uncomment any @Test markers below once this is ready to be used
 	//@Test
-	public void CavernEntranceTest1() throws DecisionResultInvalidException, CardNotFoundException {
+	public void VilyaTest1() throws DecisionResultInvalidException, CardNotFoundException {
 		//Pre-game setup
 		var scn = GetScenario();
 

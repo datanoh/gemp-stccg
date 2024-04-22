@@ -1,8 +1,9 @@
-package com.gempukku.lotro.cards.unofficial.pc.vsets.set_v01;
+package com.gempukku.lotro.cards.unofficial.pc.errata.set01;
 
 import com.gempukku.lotro.cards.GenericCardTestHelper;
 import com.gempukku.lotro.common.*;
 import com.gempukku.lotro.game.CardNotFoundException;
+import com.gempukku.lotro.game.PhysicalCardImpl;
 import com.gempukku.lotro.logic.decisions.DecisionResultInvalidException;
 import org.junit.Test;
 
@@ -10,14 +11,14 @@ import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
-public class Card_V1_028_Tests
+public class Card_01_115_ErrataTests
 {
 
 	protected GenericCardTestHelper GetScenario() throws CardNotFoundException, DecisionResultInvalidException {
 		return new GenericCardTestHelper(
 				new HashMap<>()
 				{{
-					put("card", "101_28");
+					put("card", "51_115");
 					// put other cards in here as needed for the test case
 				}},
 				GenericCardTestHelper.FellowshipSites,
@@ -27,40 +28,37 @@ public class Card_V1_028_Tests
 	}
 
 	@Test
-	public void JustaWispofCloudStatsAndKeywordsAreCorrect() throws DecisionResultInvalidException, CardNotFoundException {
+	public void StrengthofKingsStatsAndKeywordsAreCorrect() throws DecisionResultInvalidException, CardNotFoundException {
 
 		/**
-		 * Set: V1
-		 * Name: Just a Wisp of Cloud
+		 * Set: 1
+		 * Name: Strength of Kings
 		 * Unique: False
-		 * Side: Shadow
-		 * Culture: Isengard
+		 * Side: Free Peoples
+		 * Culture: Gondor
 		 * Twilight Cost: 0
 		 * Type: Event
-		 * Subtype: Shadow
-		 * Game Text: Spell. Weather. 
-		* 	Discard a Free Peoples card from hand to play Saruman from your draw deck or discard pile; his twilight cost is -1 for each Crow you can spot.
+		 * Subtype: Response
+		 * Game Text: If a skirmish event is played during a skirmish involving a [gondor] companion, cancel that event.
 		*/
 
 		var scn = GetScenario();
 
 		var card = scn.GetFreepsCard("card");
 
-		assertEquals("Just a Wisp of Cloud", card.getBlueprint().getTitle());
+		assertEquals("Strength of Kings", card.getBlueprint().getTitle());
 		assertNull(card.getBlueprint().getSubtitle());
 		assertFalse(card.getBlueprint().isUnique());
-		assertEquals(Side.SHADOW, card.getBlueprint().getSide());
-		assertEquals(Culture.ISENGARD, card.getBlueprint().getCulture());
+		assertEquals(Side.FREE_PEOPLE, card.getBlueprint().getSide());
+		assertEquals(Culture.GONDOR, card.getBlueprint().getCulture());
 		assertEquals(CardType.EVENT, card.getBlueprint().getCardType());
-		assertTrue(scn.HasKeyword(card, Keyword.SPELL));
-		assertTrue(scn.HasKeyword(card, Keyword.WEATHER));
-		assertTrue(scn.HasKeyword(card, Keyword.SHADOW));
+		assertTrue(scn.HasKeyword(card, Keyword.RESPONSE));
 		assertEquals(0, card.getBlueprint().getTwilightCost());
 	}
 
 	// Uncomment any @Test markers below once this is ready to be used
 	//@Test
-	public void JustaWispofCloudTest1() throws DecisionResultInvalidException, CardNotFoundException {
+	public void StrengthofKingsTest1() throws DecisionResultInvalidException, CardNotFoundException {
 		//Pre-game setup
 		var scn = GetScenario();
 

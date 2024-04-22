@@ -207,7 +207,7 @@
 	# 	}
 	# }
 	
-	10_11: {
+	60_11: {
 		cardInfo: {
 			imagePath: errata/60_11.jpg
 			javaClass: false

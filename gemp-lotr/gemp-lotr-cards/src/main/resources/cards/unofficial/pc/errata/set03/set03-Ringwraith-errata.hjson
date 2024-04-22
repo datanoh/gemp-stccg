@@ -80,7 +80,7 @@
 		}
 	}
 	
-	73_85: {
+	53_85: {
 		cardInfo: {
 			imagePath: errata/LOTR-EN03E085.1_card.jpg
 			javaClass: false
