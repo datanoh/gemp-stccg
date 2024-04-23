@@ -556,7 +556,7 @@ var GempLotrDeckBuildingUI = Class.extend({
                                 return function () {
                                     that.comm.shareDeck(deckNames[i],
                                         function(html) {
-                                            window.open('/share/deck?id=' + html, "_blank");
+                                            window.open(html, "_blank");
                                         });
                                 };
                             })(i));
