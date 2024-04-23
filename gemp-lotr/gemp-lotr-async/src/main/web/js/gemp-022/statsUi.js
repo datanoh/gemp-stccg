@@ -46,7 +46,6 @@ var StatsUI = Class.extend({
         
         var getPercentage = (num1, num2) => Number(num1 / num2).toLocaleString(undefined, {style: 'percent', minimumFractionDigits:2});
 
-        debugger;
         $("#startDateSpan").html(json["startDate"]);
         $("#endDateSpan").html(json["endDate"]);
         $("#activePlayersStat").html(json["activePlayers"]);
