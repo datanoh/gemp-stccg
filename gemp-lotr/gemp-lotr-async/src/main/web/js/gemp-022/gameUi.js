@@ -1,6 +1,8 @@
 var GempLotrGameUI = Class.extend({
     padding: 5,
     
+    initialized: false,
+    
     pregamePanel: null,
 
     bottomPlayerId: null,
@@ -471,6 +473,8 @@ var GempLotrGameUI = Class.extend({
                 $("body").unbind("mousemove", dragFunc);
                 return that.dragStopCardFunction(event);
             });
+        
+        this.initialized = true;
     },
     
     
@@ -1448,7 +1452,6 @@ var GempLotrGameUI = Class.extend({
     },
 
     participant: function (element) {
-        
         this.pregamePanel.hide();
         
         var participantId = element.getAttribute("participantId");
@@ -1491,6 +1494,12 @@ var GempLotrGameUI = Class.extend({
     },
     
     preGameSetup: function (element) {
+        if(this.initialized) {
+            this.pregamePanel.hide();
+            
+            return;
+        }
+        
         var summary = element.getAttribute("summary");
         var allPlayerIds = element.getAttribute("allParticipantIds").split(",");
         var participantId = element.getAttribute("participantId");
@@ -1553,8 +1562,6 @@ var GempLotrGameUI = Class.extend({
         if(notes != null && notes !== "") {
             leftContent.append("<div>" + notes + "</div>");
         }
-        
-        
         
         this.pregamePanel.show();
     },
