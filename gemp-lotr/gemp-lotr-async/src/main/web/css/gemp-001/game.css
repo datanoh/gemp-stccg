@@ -440,20 +440,12 @@ body {
     transform:translateY(30%);
 }
 
-.previewImage {
-    position: absolute;
-    z-index: 1099;
-    pointer-events: none;
-    
-}
-
-.previewImage, .previewImage img,
-.card, .card img  {
-    border-radius: 5%;
-}
-
 #auto-zoom-li {
     float: right;
+}
+
+ul.ui-tabs-nav {
+    height: 14px;
 }
 
 #auto-zoom-toggle {
@@ -467,8 +459,4 @@ body {
 .ui-button-icon-primary.ui-icon.ui-icon-search,
 .ui-button-icon-primary.ui-icon.ui-icon-circle-close {
     margin-left:4px;
-}
-
-ul.ui-tabs-nav {
-    height: 14px;
 }
