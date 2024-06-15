@@ -162,7 +162,7 @@ public class Card_01_311_ErrataTests
 
 		scn.PassCurrentPhaseActions();
 
-		assertTrue(scn.FreepsActionAvailable("Optional Trigger"));
+		assertTrue(scn.FreepsHasOptionalTriggerAvailable());
 		scn.FreepsAcceptOptionalTrigger();
 		assertSame(scn.GetRingBearer(), sam);
 	}

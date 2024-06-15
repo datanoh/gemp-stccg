@@ -1222,7 +1222,6 @@
 			}
 			{
 				type: ActivatedTrigger
-				optional: true
 				trigger: {
 					type: killed
 					filter: name(Frodo),ring bearer
