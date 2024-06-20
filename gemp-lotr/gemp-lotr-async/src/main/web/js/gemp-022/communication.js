@@ -1003,17 +1003,29 @@ var GempLotrCommunication = Class.extend({
         });
     },
     
-    previewConstructedLeague:function (start, collectionType, prizeMultiplier, name, cost, formats, serieDurations, maxMatches, callback, errorMap) {
+    processConstructedLeague:function (preview, start, collectionType, name, cost, maxRepeatMatches, 
+                                       topPrize, topCutoff, participationPrize, participationGames,
+                                       formats, serieDurations, maxMatches, callback, errorMap) {
+        let url = this.url + "/admin/addConstructedLeague";
+        
+        if(preview) {
+            url = this.url + "/admin/previewConstructedLeague";
+        }
+        
         $.ajax({
             type:"POST",
-            url:this.url + "/admin/previewConstructedLeague",
+            url:url,
             cache:false,
             data:{
                 start:start,
                 collectionType:collectionType,
-                prizeMultiplier:prizeMultiplier,
                 name:name,
                 cost:cost,
+                maxRepeatMatches:maxRepeatMatches,
+                topPrize:topPrize,
+                topCutoff:topCutoff, 
+                participationPrize:participationPrize, 
+                participationGames:participationGames,
                 format:formats,
                 serieDuration:serieDurations,
                 maxMatches:maxMatches
@@ -1021,27 +1033,6 @@ var GempLotrCommunication = Class.extend({
             success:this.deliveryCheck(callback),
             error:this.errorCheck(errorMap),
             dataType:"xml"
-        });
-    },
-    
-    addConstructedLeague:function (start, collectionType, prizeMultiplier, name, cost, formats, serieDurations, maxMatches, callback, errorMap) {
-        $.ajax({
-            type:"POST",
-            url:this.url + "/admin/addConstructedLeague",
-            cache:false,
-            data:{
-                start:start,
-                collectionType:collectionType,
-                prizeMultiplier:prizeMultiplier,
-                name:name,
-                cost:cost,
-                format:formats,
-                serieDuration:serieDurations,
-                maxMatches:maxMatches
-            },
-            success:this.deliveryCheck(callback),
-            error:this.errorCheck(errorMap),
-            dataType:"html"
         });
     },
     

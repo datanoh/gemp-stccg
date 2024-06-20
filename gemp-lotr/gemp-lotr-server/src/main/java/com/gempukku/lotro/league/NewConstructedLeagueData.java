@@ -24,7 +24,7 @@ public class NewConstructedLeagueData implements LeagueData {
     private final int _maxRepeatGames;
 
     public NewConstructedLeagueData(ProductLibrary productLibrary, LotroFormatLibrary formatLibrary, String parameters) {
-        _leaguePrizes = new FixedLeaguePrizes(productLibrary);
+
         
         String[] params = parameters.split(",");
         int start = Integer.parseInt(params[0]);
@@ -33,14 +33,22 @@ public class NewConstructedLeagueData implements LeagueData {
         if (_collectionType == null)
             throw new IllegalArgumentException("Unknown collection type");
 
-        _maxRepeatGames = Integer.parseInt(params[3]);
-        int series = Integer.parseInt(params[4]);
+        _maxRepeatGames = Integer.parseInt(params[2]);
+
+        var autoPrizes = new EventAutoPrizes(CardCollection.Item.createItems(params[3]),
+                Integer.parseInt(params[4]),
+                CardCollection.Item.createItems(params[5]),
+                Integer.parseInt(params[6]));
+
+        _leaguePrizes = new IncentiveLeaguePrizes(productLibrary, autoPrizes);
+
+        int series = Integer.parseInt(params[7]);
 
         int serieStart = start;
         for (int i = 0; i < series; i++) {
-            String format = params[5 + i * 3];
-            int duration = Integer.parseInt(params[6 + i * 3]);
-            int maxMatches = Integer.parseInt(params[7 + i * 3]);
+            String format = params[8 + i * 3];
+            int duration = Integer.parseInt(params[9 + i * 3]);
+            int maxMatches = Integer.parseInt(params[10 + i * 3]);
             _series.add(new DefaultLeagueSerieData(_leaguePrizes, false, "Serie " + (i + 1),
                     serieStart, DateUtils.offsetDate(serieStart, duration - 1),
                     maxMatches, formatLibrary.getFormat(format), _collectionType));
@@ -78,13 +86,15 @@ public class NewConstructedLeagueData implements LeagueData {
                 maxGamesPlayed+=sery.getMaxMatches();
             }
 
-            LeagueSerieData lastSerie = _series.get(_series.size() - 1);
+            LeagueSerieData lastSerie = _series.getLast();
             if (currentTime > DateUtils.offsetDate(lastSerie.getEnd(), 1)) {
+
                 for (PlayerStanding leagueStanding : leagueStandings) {
                     CardCollection leaguePrize = _leaguePrizes.getPrizeForLeague(leagueStanding.standing(), leagueStandings.size(), leagueStanding.gamesPlayed(), maxGamesPlayed, _collectionType);
                     if (leaguePrize != null)
                         collectionsManager.addItemsToPlayerCollection(true, "End of league prizes", leagueStanding.playerName(), _prizeCollectionType, leaguePrize.getAll());
-                    final CardCollection leagueTrophies = _leaguePrizes.getTrophiesForLeague(leagueStanding.standing(), leagueStandings.size(), leagueStanding.gamesPlayed(), maxGamesPlayed, _collectionType);
+
+                    final CardCollection leagueTrophies = _leaguePrizes.getTrophiesForLeague(leagueStanding, leagueStandings, maxGamesPlayed, _collectionType);
                     if (leagueTrophies != null)
                         collectionsManager.addItemsToPlayerCollection(true, "End of league trophies", leagueStanding.playerName(), CollectionType.TROPHY, leagueTrophies.getAll());
                 }

@@ -5,21 +5,21 @@ import com.gempukku.lotro.game.CardCollection;
 import com.gempukku.lotro.game.LotroFormat;
 
 public interface LeagueSerieData {
-    public int getStart();
+    int getStart();
 
-    public int getEnd();
+    int getEnd();
 
-    public int getMaxMatches();
+    int getMaxMatches();
 
-    public boolean isLimited();
+    boolean isLimited();
 
-    public String getName();
+    String getName();
 
-    public LotroFormat getFormat();
+    LotroFormat getFormat();
 
-    public CollectionType getCollectionType();
+    CollectionType getCollectionType();
 
-    public CardCollection getPrizeForLeagueMatchWinner(int winCountThisSerie, int totalGamesPlayedThisSerie);
+    CardCollection getPrizeForLeagueMatchWinner(int winCountThisSerie, int totalGamesPlayedThisSerie);
 
-    public CardCollection getPrizeForLeagueMatchLoser(int winCountThisSerie, int totalGamesPlayedThisSerie);
+    CardCollection getPrizeForLeagueMatchLoser(int winCountThisSerie, int totalGamesPlayedThisSerie);
 }

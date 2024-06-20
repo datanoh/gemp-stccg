@@ -26,7 +26,9 @@ public class LeagueServiceTest extends AbstractAtTest {
         LeagueDAO leagueDao = Mockito.mock(LeagueDAO.class);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("20120502" + "," + "default" + "," + "1" + "," + "1" + "," + "1");
+        sb.append("20120502" + "," + "default" + "," + "1"
+                + "," + "" + "," + "10" + "," + "" + "," + "3"
+                + "," + "1");
         for (int i = 0; i < 1; i++)
             sb.append("," + "lotr_block" + "," + "7" + "," + "2");
 
@@ -35,7 +37,7 @@ public class LeagueServiceTest extends AbstractAtTest {
         League league = new League(5000, "League name", "leagueType", NewConstructedLeagueData.class.getName(), sb.toString(), 0);
         leagues.add(league);
 
-        LeagueSerieData leagueSerie = league.getLeagueData(_productLibrary, _formatLibrary, null).getSeries().get(0);
+        LeagueSerieData leagueSerie = league.getLeagueData(_productLibrary, _formatLibrary, null).getSeries().getFirst();
 
         Mockito.when(leagueDao.loadActiveLeagues(Mockito.anyInt())).thenReturn(leagues);
 
@@ -79,7 +81,9 @@ public class LeagueServiceTest extends AbstractAtTest {
         LeagueDAO leagueDao = Mockito.mock(LeagueDAO.class);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("20120502" + "," + "default" + "," + "1" + "," + "1" + "," + "1");
+        sb.append("20120502" + "," + "default" + "," + "1"
+                + "," + "" + "," + "10" + "," + "" + "," + "3"
+                + "," + "1");
         for (int i = 0; i < 1; i++)
             sb.append("," + "lotr_block" + "," + "7" + "," + "2");
 
@@ -88,7 +92,7 @@ public class LeagueServiceTest extends AbstractAtTest {
         League league = new League(5000, "League name", "leagueType", NewConstructedLeagueData.class.getName(), sb.toString(), 0);
         leagues.add(league);
 
-        LeagueSerieData leagueSerie = league.getLeagueData(_productLibrary, _formatLibrary, null).getSeries().get(0);
+        LeagueSerieData leagueSerie = league.getLeagueData(_productLibrary, _formatLibrary, null).getSeries().getFirst();
 
         Mockito.when(leagueDao.loadActiveLeagues(Mockito.anyInt())).thenReturn(leagues);
 
@@ -125,7 +129,9 @@ public class LeagueServiceTest extends AbstractAtTest {
         LeagueDAO leagueDao = Mockito.mock(LeagueDAO.class);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("20120502" + "," + "default" + "," + "1" + "," + "1" + "," + "1");
+        sb.append("20120502" + "," + "default" + "," + "1"
+                + "," + "" + "," + "10" + "," + "" + "," + "3"
+                + "," + "1");
         for (int i = 0; i < 1; i++)
             sb.append("," + "lotr_block" + "," + "7" + "," + "2");
 
@@ -134,7 +140,7 @@ public class LeagueServiceTest extends AbstractAtTest {
         League league = new League(5000, "League name", "leagueType", NewConstructedLeagueData.class.getName(), sb.toString(), 0);
         leagues.add(league);
 
-        LeagueSerieData leagueSerie = league.getLeagueData(_productLibrary, _formatLibrary,null).getSeries().get(0);
+        LeagueSerieData leagueSerie = league.getLeagueData(_productLibrary, _formatLibrary,null).getSeries().getFirst();
 
         Mockito.when(leagueDao.loadActiveLeagues(Mockito.anyInt())).thenReturn(leagues);
 

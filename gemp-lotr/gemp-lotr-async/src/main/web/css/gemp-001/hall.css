@@ -16,6 +16,15 @@ html, body {
 	gap: 2px;
 }
 
+.flex-fill {
+	flex-grow: 1;
+}
+
+.flex-static {
+	flex-grow: 0;
+}
+
+
 a:visited {
 	color: #A63F03;
 }
@@ -733,4 +742,56 @@ table.tables tr.privateForPlayer {
 	display:block;
 	font-style: italic;
 	padding: 1em;
+}
+
+.league-form {
+	display: flex; 
+	flex-direction: column; 
+	width: fit-content;
+	max-width: 60%; 
+	margin: auto;
+	align-items: stretch;
+	gap: 0.4em;
+}
+
+.serieData {
+	border-style: solid; 
+	padding: 1em; 
+	margin: 0.5em; 
+	gap: 0.4em;
+	display: flex; 
+	flex-direction: column; 
+}
+
+.label {
+	padding: 1em;
+	
+}
+
+#constructed-league-result-label {
+	align-items: center;
+}
+
+#constructed-league-result {
+	text-wrap: balance;
+	padding: 0.5em;
+	margin: 0.5em;
+	background: #333333;
+	border-style: solid;
+	border-color: #555555;
+	border-width: 1px;
+}
+
+#prize-info {
+	text-wrap: balance;
+	padding: 1em;
+	margin: 1em;
+	background: #222222;
+	border-style: solid;
+	border-color: #555555;
+	border-width: 1px;
+}
+
+.label-column {
+	width: 50%;
 }
