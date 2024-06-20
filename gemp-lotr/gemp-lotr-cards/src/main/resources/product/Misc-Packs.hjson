@@ -380,6 +380,10 @@
 			1x1_389
 			#Gandalf's Staff MW
 			1x2_127
+			#Freca, Hungry Savage	FA
+			1x9_60
+			#Sting, Bane of the Eight Legs MW
+			1x8_126
 		]
 	}
 	
@@ -467,7 +471,8 @@
 			1x10_128
 			#Troop of Uruk-hai FA
 			1x1_389
-			
+			#Freca, Hungry Savage	FA
+			1x9_60
 		]
 	}
 	
@@ -593,6 +598,8 @@
 			1x9_58
 			#Gandalf's Staff MW
 			1x2_127
+			#Sting, Bane of the Eight Legs MW
+			1x8_126
 		]
 	}
 	
@@ -718,6 +725,8 @@
 			1x9_58
 			#Gandalf's Staff MW
 			1x2_127
+			#Sting, Bane of the Eight Legs MW
+			1x8_126
 		]
 	}
 ]
