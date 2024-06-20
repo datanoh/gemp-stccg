@@ -627,6 +627,18 @@ var PCCards = {
 	//Troop of Uruk-hai FA
 	'1_389': 'https://i.lotrtcgpc.net/promos/LOTR-EN01U143.0_card.jpg',
 	//Gandalf's Staff MW
-	'2_127': 'https://i.lotrtcgpc.net/promos/LOTR-EN02O022.0_card.jpg'
+	'2_127': 'https://i.lotrtcgpc.net/promos/LOTR-EN02O022.0_card.jpg', 
+	
+	//May 2024 Weekend League
+	//Freca, Hungry Savage	FA
+	'9_60': 'https://i.lotrtcgpc.net/promos/LOTR-EN09U002.0_card.jpg',
+	//Sting, Bane of the Eight Legs MW
+	'8_126': 'https://i.lotrtcgpc.net/promos/LOTR-EN08O113.0_card.jpg',
+	
+	//June 2024 Weekend League
+	//Dwarven Bracers FA
+	'2_128': 'https://i.lotrtcgpc.net/promos/LOTR-EN02U003.0_card.jpg',
+	//Ulaire Cantea, Lieutenant of Dol Guldur MW
+	'1_390': 'https://i.lotrtcgpc.net/promos/LOTR-EN01O230.0_card.jpg'
 }
 
