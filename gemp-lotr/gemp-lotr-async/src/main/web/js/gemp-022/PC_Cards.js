@@ -639,6 +639,12 @@ var PCCards = {
 	//Dwarven Bracers FA
 	'2_128': 'https://i.lotrtcgpc.net/promos/LOTR-EN02U003.0_card.jpg',
 	//Ulaire Cantea, Lieutenant of Dol Guldur MW
-	'1_390': 'https://i.lotrtcgpc.net/promos/LOTR-EN01O230.0_card.jpg'
+	'1_390': 'https://i.lotrtcgpc.net/promos/LOTR-EN01O230.0_card.jpg',
+	
+	//July 2024 Weekend League
+	//Theoden, Tall and Proud FA
+	'8_127': 'https://i.lotrtcgpc.net/promos/LOTR-EN08U092.0_card.jpg',
+	//Evil-smelling Fens FA
+	'5_129': 'https://i.lotrtcgpc.net/promos/LOTR-EN05U022.0_card.jpg',
 }
 
