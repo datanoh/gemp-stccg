@@ -62,7 +62,7 @@ public class TournamentRequestHandler extends LotroServerRequestHandler implemen
         } else if (uri.startsWith("/") && uri.endsWith("/html") && uri.contains("/deck/") && request.method() == HttpMethod.GET) {
             getTournamentDeck(request, uri.substring(1, uri.indexOf("/deck/")), uri.substring(uri.indexOf("/deck/") + 6, uri.lastIndexOf("/html")), responseWriter);
         } else if (uri.startsWith("/") && uri.endsWith("/html") && uri.contains("/report/") && request.method() == HttpMethod.GET) {
-            getTournamentReport(request, uri.substring(1, uri.indexOf("/report/")), uri.substring(uri.indexOf("/report/") + 6, uri.lastIndexOf("/html")), responseWriter);
+            getTournamentReport(request, uri.substring(1, uri.indexOf("/report/")), uri.substring(uri.indexOf("/report/") + 8, uri.lastIndexOf("/html")), responseWriter);
         } else if (uri.startsWith("/") && request.method() == HttpMethod.GET) {
             getTournamentInfo(request, uri.substring(1), responseWriter);
         } else {
