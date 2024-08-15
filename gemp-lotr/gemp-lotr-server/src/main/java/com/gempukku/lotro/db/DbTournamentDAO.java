@@ -27,7 +27,7 @@ public class DbTournamentDAO implements TournamentDAO {
     @Override
     public void addTournament(DBDefs.Tournament dbinfo) {
         try {
-            Sql2o db = new Sql2o(_dbAccess.getDataSource());
+            var db = _dbAccess.openDB();
 
             String sql = """
                         INSERT INTO tournament (tournament_id, start_date, draft_type, name, format, 
@@ -65,7 +65,7 @@ public class DbTournamentDAO implements TournamentDAO {
     public DBDefs.Tournament getTournamentById(String tournamentId) {
 
         try {
-            Sql2o db = new Sql2o(_dbAccess.getDataSource());
+            var db = _dbAccess.openDB();
 
             try (org.sql2o.Connection conn = db.open()) {
                 String sql = """
@@ -89,7 +89,7 @@ public class DbTournamentDAO implements TournamentDAO {
     @Override
     public List<DBDefs.Tournament> getUnfinishedTournaments() {
         try {
-            Sql2o db = new Sql2o(_dbAccess.getDataSource());
+            var db = _dbAccess.openDB();
 
             try (org.sql2o.Connection conn = db.open()) {
                 String sql = """
@@ -113,7 +113,7 @@ public class DbTournamentDAO implements TournamentDAO {
     @Override
     public List<DBDefs.Tournament> getFinishedTournamentsSince(ZonedDateTime time) {
         try {
-            Sql2o db = new Sql2o(_dbAccess.getDataSource());
+            var db = _dbAccess.openDB();
 
             try (org.sql2o.Connection conn = db.open()) {
                 String sql = """
@@ -170,7 +170,7 @@ public class DbTournamentDAO implements TournamentDAO {
     public List<DBDefs.ScheduledTournament> getUnstartedScheduledTournamentQueues(ZonedDateTime tillDate) {
         try {
 
-            Sql2o db = new Sql2o(_dbAccess.getDataSource());
+            var db = _dbAccess.openDB();
 
             try (org.sql2o.Connection conn = db.open()) {
                 String sql = """
@@ -194,7 +194,7 @@ public class DbTournamentDAO implements TournamentDAO {
     @Override
     public void updateScheduledTournamentStarted(String scheduledTournamentId) {
         try {
-            Sql2o db = new Sql2o(_dbAccess.getDataSource());
+            var db = _dbAccess.openDB();
 
             String sql = """
                         UPDATE scheduled_tournament 

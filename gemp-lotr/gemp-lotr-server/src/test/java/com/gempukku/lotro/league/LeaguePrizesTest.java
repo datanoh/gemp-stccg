@@ -29,7 +29,7 @@ public class LeaguePrizesTest extends AbstractAtTest {
         LeaguePrizes leaguePrizes = new FixedLeaguePrizes(_productLibrary);
         for (int i = 1; i <= 32; i++) {
             System.out.println("Place "+i);
-            CardCollection prize = leaguePrizes.getPrizeForLeague(i, 60, 1, 2, CollectionType.ALL_CARDS);
+            CardCollection prize = leaguePrizes.getPrizeForLeague(i, 60, 1, 2);
             if (prize != null)
                 for (CardCollection.Item stringIntegerEntry : prize.getAll()) {
                     System.out.println(stringIntegerEntry.getBlueprintId() + ": " + stringIntegerEntry.getCount());
@@ -81,7 +81,7 @@ public class LeaguePrizesTest extends AbstractAtTest {
 
         for (var standing : standings) {
             System.out.println("Place " + standing.standing());
-            var collection = leaguePrizes.getTrophiesForLeague(standing, standings, 50, CollectionType.ALL_CARDS);
+            var collection = leaguePrizes.getTrophiesForLeague(standing, standings, 50);
 
             List<CardCollection.Item> prizes = new ArrayList<>();
 

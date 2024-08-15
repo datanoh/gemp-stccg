@@ -18,7 +18,7 @@ public class IncentiveLeaguePrizes extends FixedLeaguePrizes{
     }
 
     @Override
-    public CardCollection getTrophiesForLeague(PlayerStanding player, List<PlayerStanding> allStandings, int maxGamesPlayed, CollectionType collectionType) {
+    public CardCollection getTrophiesForLeague(PlayerStanding player, List<PlayerStanding> allStandings, int maxGamesPlayed) {
         var prizes = new DefaultCardCollection();
 
         int cutoffPoints = 0;

@@ -11,7 +11,7 @@ public interface LeaguePrizes {
 
     public CardCollection getPrizeForLeagueMatchLoser(int winCountThisSerie, int totalGamesPlayedThisSerie);
 
-    public CardCollection getPrizeForLeague(int position, int playersCount, int gamesPlayed, int maxGamesPlayed, CollectionType collectionType);
+    public CardCollection getPrizeForLeague(int position, int playersCount, int gamesPlayed, int maxGamesPlayed);
 
-    public CardCollection getTrophiesForLeague(PlayerStanding standing, List<PlayerStanding> allStandings, int maxGamesPlayed, CollectionType collectionType);
+    public CardCollection getTrophiesForLeague(PlayerStanding standing, List<PlayerStanding> allStandings, int maxGamesPlayed);
 }

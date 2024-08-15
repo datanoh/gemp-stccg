@@ -9,7 +9,7 @@ WHERE id IN (17)
 
 INSERT INTO gemp_db.scheduled_tournament
 (tournament_id, name, format, start_date, cost, playoff, tiebreaker, prizes, minimum_players, manual_kickoff, started)
-VALUES('2023-wc-group-stage-pc-fotr-backup', '2023 WC Backup Registration', 'pc_fotr_block', '2023-10-14 20:00:00', 0, 'swiss', 'owr', 'daily', 2, true, false);
+VALUES('2024-wc-champ-pc-fotr', '2024 PC-FOTR Championship', 'pc_fotr_block', '2024-08-10 17:00:00', 0, 'swiss', 'owr', 'daily', 2, true, false);
 VALUES('2023-wc-group-stage-pc-movie', '2023 WC PC-Movie Group Stage', 'pc_movie', '2023-10-14 17:00:00', 0, 'swiss', 'owr', 'daily', 2, true, false);
 
 DELETE 
@@ -39,18 +39,41 @@ SELECT *
 FROM league l 
 ORDER BY id DESC
 
+SELECT class, count(*)
+FROM league l
+group by class
+
 UPDATE league 
 SET parameters = '20230908,default,0.69,3,2,open,7,5,rev_tow_sta,7,10'
 WHERE id = 642
 
 
 SELECT *
+FROM tournament_match tm 
+ORDER BY id DESC
+
+
+SELECT 
+	 gh.winner 
+	,gh.loser
+	,'' AS round
+	,gh.win_reason 
+	,gh.lose_reason 
+	,gh.start_date AS `Start`
+	,gh.end_date AS `End`
 	,CONCAT('https://play.lotrtcgpc.net/gemp-lotr/game.html?replayId=',REPLACE(winner, '_', '%5F'), '$', win_recording_id) AS winner_replay
 	,CONCAT('https://play.lotrtcgpc.net/gemp-lotr/game.html?replayId=',REPLACE(loser, '_', '%5F'), '$', lose_recording_id) AS loser_replay
 FROM game_history gh 
-WHERE tournament = 'Constructed - Weekend Qualifier PC-Movie - Serie 1'
-	AND (winner = 'Chadwick537' OR loser = 'Chadwick537')
-ORDER BY id DESC
+WHERE tournament = '2024 PC-FOTR Championship'
+	#AND (winner = 'Chadwick537' OR loser = 'Chadwick537')
+
+
+
+SELECT id, tournament_id, name, format, start_date, cost, playoff,
+                        tiebreaker, prizes, minimum_players, manual_kickoff, started
+                    FROM scheduled_tournament
+                    WHERE started = 0
+                        AND start_date <= "2024-08-10 16:01"
 
 
 SELECT *
@@ -64,7 +87,7 @@ WHERE name IS NULL
 
 UPDATE tournament 
 SET stage = 'Playing games'
-WHERE id = 1423
+WHERE id = 1432
 
 UPDATE tournament 
 SET start_date = '2023-10-01 20:35:00.000'
@@ -106,7 +129,7 @@ ORDER BY id DESC
 
 SELECT *
 FROM game_history gh 
-WHERE tournament IN ('2023 WC PC-FOTR Group Stage', '2023 WC Group Stage')
+WHERE tournament IN ('2024 PC-FOTR Championship')
 ORDER BY id DESC
 
 

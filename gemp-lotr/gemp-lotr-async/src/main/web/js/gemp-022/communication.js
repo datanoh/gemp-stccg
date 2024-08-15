@@ -927,85 +927,80 @@ var GempLotrCommunication = Class.extend({
         });
     },
     
-    previewSealedLeague:function (format, start, serieDuration, maxMatches, name, cost, callback, errorMap) {
-        $.ajax({
-            type:"POST",
-            url:this.url + "/admin/previewSealedLeague",
-            cache:false,
-            data:{
-                format:format,
-                start:start,
-                serieDuration:serieDuration,
-                maxMatches:maxMatches,
-                name:name,
-                cost:cost
-            },
-            success:this.deliveryCheck(callback),
-            error:this.errorCheck(errorMap),
-            dataType:"xml"
-        });
-    },
-    
-    addSealedLeague:function (format, start, serieDuration, maxMatches, name, cost, callback, errorMap) {
-        $.ajax({
-            type:"POST",
-            url:this.url + "/admin/addSealedLeague",
-            cache:false,
-            data:{
-                format:format,
-                start:start,
-                serieDuration:serieDuration,
-                maxMatches:maxMatches,
-                name:name,
-                cost:cost
-            },
-            success:this.deliveryCheck(callback),
-            error:this.errorCheck(errorMap),
-            dataType:"html"
-        });
-    },
-    
-    previewSoloDraftLeague:function (format, start, serieDuration, maxMatches, name, cost, callback, errorMap) {
-        $.ajax({
-            type:"POST",
-            url:this.url + "/admin/previewSoloDraftLeague",
-            cache:false,
-            data:{
-                format:format,
-                start:start,
-                serieDuration:serieDuration,
-                maxMatches:maxMatches,
-                name:name,
-                cost:cost
-            },
-            success:this.deliveryCheck(callback),
-            error:this.errorCheck(errorMap),
-            dataType:"xml"
-        });
-    },
-    
-    addSoloDraftLeague:function (format, start, serieDuration, maxMatches, name, cost, callback, errorMap) {
-        $.ajax({
-            type:"POST",
-            url:this.url + "/admin/addSoloDraftLeague",
-            cache:false,
-            data:{
-                format:format,
-                start:start,
-                serieDuration:serieDuration,
-                maxMatches:maxMatches,
-                name:name,
-                cost:cost
-            },
-            success:this.deliveryCheck(callback),
-            error:this.errorCheck(errorMap),
-            dataType:"html"
-        });
-    },
-    
-    processConstructedLeague:function (preview, start, collectionType, name, cost, maxRepeatMatches, 
+    processSealedLeague:function (preview, start, name, cost, format, serieDuration, maxMatches,
+                                       maxRepeatMatches, inviteOnly, description,
                                        topPrize, topCutoff, participationPrize, participationGames,
-                                       formats, serieDurations, maxMatches, callback, errorMap) {
+                                       callback, errorMap) {
+        let url = this.url + "/admin/addSealedLeague";
+        
+        if(preview) {
+            url = this.url + "/admin/previewSealedLeague";
+        }
+        $.ajax({
+            type:"POST",
+            url:url,
+            cache:false,
+            data:{
+                start:start,
+                name:name,
+                cost:cost,
+                format:format,
+                serieDuration:serieDuration,
+                maxMatches:maxMatches,
+                maxRepeatMatches:maxRepeatMatches,
+                inviteOnly:inviteOnly,
+                description:description,
+                topPrize:topPrize,
+                topCutoff:topCutoff, 
+                participationPrize:participationPrize, 
+                participationGames:participationGames,
+            },
+            success:this.deliveryCheck(callback),
+            error:this.errorCheck(errorMap),
+            dataType:"xml"
+        });
+    },
+    
+    processSoloDraftLeague:function (preview, start, name, cost, format, serieDuration, maxMatches,
+                                       maxRepeatMatches, inviteOnly, description,
+                                       topPrize, topCutoff, participationPrize, participationGames,
+                                       callback, errorMap) {
+        let url = this.url + "/admin/addSoloDraftLeague";
+        
+        if(preview) {
+            url = this.url + "/admin/previewSoloDraftLeague";
+        }
+        
+        $.ajax({
+            type:"POST",
+            url:url,
+            cache:false,
+            data:{
+                start:start,
+                name:name,
+                cost:cost,
+                format:format,
+                serieDuration:serieDuration,
+                maxMatches:maxMatches,
+                maxRepeatMatches:maxRepeatMatches,
+                inviteOnly:inviteOnly,
+                description:description,
+                topPrize:topPrize,
+                topCutoff:topCutoff, 
+                participationPrize:participationPrize, 
+                participationGames:participationGames,
+            },
+            success:this.deliveryCheck(callback),
+            error:this.errorCheck(errorMap),
+            dataType:"xml"
+        });
+    },
+        
+    processConstructedLeague:function (preview, start, collectionType, name, cost, maxRepeatMatches, 
+                                       inviteOnly, description,
+                                       topPrize, topCutoff, participationPrize, participationGames,
+                                       formats, serieDurations, maxMatches,
+                                       callback, errorMap) {
         let url = this.url + "/admin/addConstructedLeague";
         
         if(preview) {
@@ -1028,11 +1023,28 @@ var GempLotrCommunication = Class.extend({
                 participationGames:participationGames,
                 format:formats,
                 serieDuration:serieDurations,
-                maxMatches:maxMatches
+                maxMatches:maxMatches,
+                inviteOnly:inviteOnly,
+                description:description
             },
             success:this.deliveryCheck(callback),
             error:this.errorCheck(errorMap),
             dataType:"xml"
+        });
+    },
+    
+    addLeaguePlayers:function(code, players, callback, errorMap) {
+        $.ajax({
+            type:"POST",
+            url:this.url + "/admin/addLeaguePlayers",
+            cache:false,
+            data:{
+                code:code,
+                players:players
+            },
+            success:this.deliveryCheck(callback),
+            error:this.errorCheck(errorMap),
+            dataType:"html"
         });
     },
     

@@ -1,23 +1,19 @@
 package com.gempukku.lotro.tournament;
 
-import com.gempukku.lotro.DateUtils;
+import com.gempukku.lotro.common.DateUtils;
 import com.gempukku.lotro.collection.CollectionsManager;
 import com.gempukku.lotro.collection.DeckRenderer;
-import com.gempukku.lotro.competitive.BestOfOneStandingsProducer;
+import com.gempukku.lotro.competitive.ModifiedMedianStandingsProducer;
 import com.gempukku.lotro.competitive.PlayerStanding;
 import com.gempukku.lotro.db.vo.CollectionType;
 import com.gempukku.lotro.draft.DefaultDraft;
 import com.gempukku.lotro.draft.Draft;
 import com.gempukku.lotro.draft.DraftPack;
 import com.gempukku.lotro.game.*;
-import com.gempukku.lotro.game.formats.LotroFormatLibrary;
-import com.gempukku.lotro.logic.GameUtils;
 import com.gempukku.lotro.logic.vo.LotroDeck;
-import com.gempukku.lotro.packs.PacksStorage;
 import com.gempukku.lotro.packs.ProductLibrary;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.json.XML;
 
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -101,7 +97,7 @@ public class DefaultTournament implements Tournament {
                 }
             }
 
-            if (matchesToCreate.size() > 0)
+            if (!matchesToCreate.isEmpty())
                 _nextTask = new CreateMissingGames(matchesToCreate);
         } else if (_tournamentStage == Stage.DRAFT) {
             _draft = new DefaultDraft(collectionsManager, _collectionType, productLibrary, draftPack,
@@ -135,13 +131,13 @@ public class DefaultTournament implements Tournament {
             }
         }
 
-        if(_players.size() > 0 && _playerList.length() > 2) {
+        if(!_players.isEmpty() && _playerList.length() > 2) {
             _playerList = _playerList.substring(0, _playerList.length() - 2);
         }
 
-        if(_droppedPlayers.size() > 0) {
+        if(!_droppedPlayers.isEmpty()) {
             _playerList += ", " + String.join("*, ", _droppedPlayers);
-            if(_droppedPlayers.size() > 0) {
+            if(!_droppedPlayers.isEmpty()) {
                 _playerList += "*";
             }
         }
@@ -322,7 +318,7 @@ public class DefaultTournament implements Tournament {
                     _tournamentService.updateTournamentStage(_tournamentId, _tournamentStage);
                 }
                 else if (_tournamentStage == Stage.PLAYING_GAMES) {
-                    if (_currentlyPlayingPlayers.size() == 0) {
+                    if (_currentlyPlayingPlayers.isEmpty()) {
                         if (_pairingMechanism.isFinished(_tournamentRound, _players, _droppedPlayers)) {
                             finishTournament(tournamentCallback, collectionsManager);
                         } else {
@@ -353,7 +349,7 @@ public class DefaultTournament implements Tournament {
 
         _lock.readLock().lock();
         try {
-            _currentStandings = BestOfOneStandingsProducer.produceStandings(_players, _finishedTournamentMatches, 2, 1, _playerByes);
+            _currentStandings = ModifiedMedianStandingsProducer.produceStandings(_players, _finishedTournamentMatches, 1, 0, _playerByes);
             return _currentStandings;
         } finally {
             _lock.readLock().unlock();
@@ -507,8 +503,8 @@ public class DefaultTournament implements Tournament {
                 .append("<li>Format: ").append(_format).append("</li>")
                 .append("<li>Collection: ").append(_collectionType.getFullName()).append("</li>")
                 .append("<li>Total Rounds: ").append(_tournamentRound).append("</li>")
-                .append("<li>Start: ").append(DateUtils.FormatStandardDateTime(start)).append("</li>")
-                .append("<li>End: ").append(DateUtils.FormatStandardDateTime(end)).append("</li>")
+                .append("<li>Start: ").append(DateUtils.FormatDateTime(start)).append("</li>")
+                .append("<li>End: ").append(DateUtils.FormatDateTime(end)).append("</li>")
                 .append("</ul><br/><br/><hr>");
 
         var decks = new ArrayList<String>();

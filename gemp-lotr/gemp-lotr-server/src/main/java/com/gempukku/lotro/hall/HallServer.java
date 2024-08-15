@@ -6,12 +6,13 @@ import com.gempukku.lotro.chat.ChatCommandErrorException;
 import com.gempukku.lotro.chat.ChatRoomMediator;
 import com.gempukku.lotro.chat.ChatServer;
 import com.gempukku.lotro.collection.CollectionsManager;
+import com.gempukku.lotro.common.DateUtils;
 import com.gempukku.lotro.db.IgnoreDAO;
 import com.gempukku.lotro.db.vo.CollectionType;
 import com.gempukku.lotro.db.vo.League;
 import com.gempukku.lotro.game.*;
 import com.gempukku.lotro.game.formats.LotroFormatLibrary;
-import com.gempukku.lotro.league.LeagueSerieData;
+import com.gempukku.lotro.league.LeagueSerieInfo;
 import com.gempukku.lotro.league.LeagueService;
 import com.gempukku.lotro.logic.GameUtils;
 import com.gempukku.lotro.logic.timing.GameResultListener;
@@ -344,7 +345,7 @@ public class HallServer extends AbstractServer {
 
     private GameSettings createGameSettings(String type, String timer, String description, boolean isInviteOnly, boolean isPrivate, boolean isHidden) throws HallException {
         League league = null;
-        LeagueSerieData leagueSerie = null;
+        LeagueSerieInfo leagueSerie = null;
         CollectionType collectionType = _defaultCollectionType;
         LotroFormat format = _formatLibrary.getHallFormats().get(type);
         GameTimer gameTimer = GameTimer.ResolveTimer(timer);
@@ -696,7 +697,7 @@ public class HallServer extends AbstractServer {
         Set<LotroGameParticipant> players = gameTable.getPlayers();
         LotroGameParticipant[] participants = players.toArray(new LotroGameParticipant[0]);
         final League league = gameTable.getGameSettings().getLeague();
-        final LeagueSerieData leagueSerie = gameTable.getGameSettings().getLeagueSerie();
+        final LeagueSerieInfo leagueSerie = gameTable.getGameSettings().getLeagueSerie();
 
         GameResultListener listener = null;
         if (league != null) {

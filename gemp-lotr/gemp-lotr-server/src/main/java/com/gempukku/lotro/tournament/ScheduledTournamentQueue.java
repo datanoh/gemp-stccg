@@ -1,6 +1,6 @@
 package com.gempukku.lotro.tournament;
 
-import com.gempukku.lotro.DateUtils;
+import com.gempukku.lotro.common.DateUtils;
 import com.gempukku.lotro.collection.CollectionsManager;
 import com.gempukku.lotro.common.DBDefs;
 import com.gempukku.lotro.db.vo.CollectionType;
@@ -9,9 +9,7 @@ import com.gempukku.lotro.packs.ProductLibrary;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 public class ScheduledTournamentQueue extends AbstractTournamentQueue implements TournamentQueue {
     private static final Duration _signupTimeBeforeStart = Duration.ofMinutes(60);
@@ -34,7 +32,7 @@ public class ScheduledTournamentQueue extends AbstractTournamentQueue implements
         _scheduledTournamentId = info.tournament_id;
         _tournamentName = info.name;
         _startTime = info.GetUTCStartDate();
-        _startCondition = "at " + _startTime.format(DateUtils.DateHourMinuteFormatter);
+        _startCondition = "at " + _startTime.format(DateUtils.DateTimeFormat);
         _minimumPlayers = info.minimum_players;
 
         if(info.manual_kickoff) {

@@ -5,7 +5,7 @@ import com.gempukku.lotro.db.vo.League;
 import com.gempukku.lotro.game.LotroGameMediator;
 import com.gempukku.lotro.game.LotroGameParticipant;
 import com.gempukku.lotro.game.Player;
-import com.gempukku.lotro.league.LeagueSerieData;
+import com.gempukku.lotro.league.LeagueSerieInfo;
 import com.gempukku.lotro.league.LeagueService;
 import com.gempukku.lotro.logic.vo.LotroDeck;
 
@@ -75,7 +75,7 @@ public class TableHolder {
             if (!leagueService.isPlayerInLeague(league, player))
                 throw new HallException("You're not in that league");
 
-            LeagueSerieData leagueSerie = awaitingTable.getGameSettings().getLeagueSerie();
+            LeagueSerieInfo leagueSerie = awaitingTable.getGameSettings().getLeagueSerie();
             if (!leagueService.canPlayRankedGame(league, leagueSerie, player.getName()))
                 throw new HallException("You have already played max games in league");
             if (awaitingTable.getPlayerNames().size() != 0 && !leagueService.canPlayRankedGameAgainst(league, leagueSerie, awaitingTable.getPlayerNames().iterator().next(), player.getName()))

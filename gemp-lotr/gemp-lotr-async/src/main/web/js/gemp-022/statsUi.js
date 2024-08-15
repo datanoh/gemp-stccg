@@ -46,12 +46,12 @@ var StatsUI = Class.extend({
         
         var getPercentage = (num1, num2) => Number(num1 / num2).toLocaleString(undefined, {style: 'percent', minimumFractionDigits:2});
 
-        $("#startDateSpan").html(json["startDate"]);
-        $("#endDateSpan").html(json["endDate"]);
-        $("#activePlayersStat").html(json["activePlayers"]);
-        $("#gamesCountStat").html(json["gamesCount"]);
+        $("#startDateSpan").html(json["StartDate"]);
+        $("#endDateSpan").html(json["EndDate"]);
+        $("#activePlayersStat").html(json["ActivePlayers"]);
+        $("#gamesCountStat").html(json["GamesCount"]);
 
-        var formatStats = json["stats"];
+        var formatStats = json["Stats"];
         if (formatStats.length > 0) {
             
             var casualStats = $("#casualStatsTable");

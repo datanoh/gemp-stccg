@@ -44,7 +44,7 @@ public class FixedLeaguePrizes implements LeaguePrizes {
     }
 
     @Override
-    public CardCollection getPrizeForLeague(int position, int playersCount, int gamesPlayed, int maxGamesPlayed, CollectionType collectionType) {
+    public CardCollection getPrizeForLeague(int position, int playersCount, int gamesPlayed, int maxGamesPlayed) {
         DefaultCardCollection prize = new DefaultCardCollection();
         prize.addAndOpenPack("Any Random Foil", getMinorPrizeCount(position), _productLibrary);
         prize.addItem("Event Chase Booster", getMajorPrizeCount(position), true);
@@ -55,7 +55,7 @@ public class FixedLeaguePrizes implements LeaguePrizes {
     }
 
     @Override
-    public CardCollection getTrophiesForLeague(PlayerStanding standing, List<PlayerStanding> allStandings, int maxGamesPlayed, CollectionType collectionType) {
+    public CardCollection getTrophiesForLeague(PlayerStanding standing, List<PlayerStanding> allStandings, int maxGamesPlayed) {
         return null;
     }
 

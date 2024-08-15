@@ -1,0 +1,245 @@
+<script type="text/javascript">
+function gatherData(formElem) {
+	var data = {};
+
+	var inputs = $("input[type='text'], option:selected", formElem).each(
+		function () {
+			
+			var input = $(this);
+			var name = null;
+			var value = null;
+			if (input.prop("tagName") == "INPUT") {
+				name = input.attr("name");
+				value = input.val();
+			} else if (input.prop("tagName") == "OPTION") {
+				name = input.parents("select").attr("name");
+				value = input.attr("value");
+			}
+			if (name != null && value != null) {
+				if (data[name] == null)
+					data[name] = new Array();
+				data[name].push(value);
+			}
+		});
+
+	return data;
+}
+
+$(document).ready(
+	function () {
+		var previewDialog = $("<div></div>")
+				.dialog({
+					autoOpen:false,
+					closeOnEscape:true,
+					resizable:true,
+					modal:true,
+					title:"Preview window",
+					closeText: ''
+				});
+
+		var displayPreview = function (xml) {
+			var root = xml.documentElement;
+			if(root == null)
+			{
+				xml = new DOMParser().parseFromString(xml,"text/xml");
+				root = xml.documentElement;
+			}
+			if (root.tagName == 'league') {
+				var league = root;
+
+				var leagueName = league.getAttribute("name");
+				var cost = parseInt(league.getAttribute("cost"));
+
+				previewDialog.append("<div class='leagueName'>" + leagueName + "</div>");
+
+				var costStr = formatPrice(cost);
+				previewDialog.append("<div class='leagueCost'><b>Cost:</b> " + costStr + "</div>");
+
+				var series = league.getElementsByTagName("serie");
+				for (var j = 0; j < series.length; j++) {
+
+					var serie = series[j];
+					var serieName = serie.getAttribute("type");
+					var serieStart = serie.getAttribute("start");
+					var serieEnd = serie.getAttribute("end");
+					var maxMatches = serie.getAttribute("maxMatches");
+					var format = serie.getAttribute("format");
+					var collection = serie.getAttribute("collection");
+					var limited = serie.getAttribute("limited");
+
+					var serieText = serieName + " - " + getDateString(serieStart) + " to " + getDateString(serieEnd);
+					previewDialog.append("<div class='serieName'>" + serieText + "</div>");
+
+					previewDialog.append("<div><b>Format:</b> " + ((limited == "true") ? "Limited" : "Constructed") + " " + format + "</div>");
+					previewDialog.append("<div><b>Collection:</b> " + collection + "</div>");
+
+					previewDialog.append("<div>Maximum ranked matches in serie: " + maxMatches + "</div>");
+				}
+			}
+		};
+		
+		var now = new Date();
+		var nowStr = "" + now.getFullYear() + String(1 + now.getMonth()).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+		$("#sealed-start").val(nowStr);
+		$("#solo-draft-start").val(nowStr);
+		$("#constructed-start").val(nowStr);
+
+		
+		$("#add-additional-table-button").button().click(
+				function () {
+					$(".tabledata").last().clone().appendTo(".tablesgroup");
+				});
+		
+		$("#add-tables-button").button().click(
+			function () {
+				let resultdiv = $("#tables-result");
+				resultdiv.html("Processing...");
+				
+				var data = gatherData($(".tablesgroup"))
+				
+				console.log(data);
+				
+				hall.comm.addTables(
+			   		$("#table-name").val(), 
+			   		$("#table-tournament").val(),
+			   		$("#table-format").val(),
+			   		$("#table-timer").val(),
+			   		data.playerone,
+			   		data.playertwo,
+					function (xml) {
+						resultdiv.html("OK");
+					}, tourneyErrorMap(resultdiv));
+				});
+		
+		
+		hall.comm.getFormats(true,
+			function (json) 
+			{
+				//console.log(json);
+				let drafts = json.draftTemplates;
+				let formats = json.formats;
+				let sealed = json.sealedTemplates
+
+				for (var prop in formats) {
+					if (Object.prototype.hasOwnProperty.call(formats, prop)) {
+						//console.log(prop);
+						
+						if(formats[prop].name.includes("Limited"))
+							continue;
+						
+						let num = ("0000" + formats[prop].order).substr(-4);
+						
+						var item = $("<option/>")
+							.attr("value", prop)
+							.text("" + num + " - " + formats[prop].name);
+						$("#table-format").append(item);
+					}
+				}
+				sortOptionsByName("#table-format");
+				
+				$("#table-format option").each(function(index) {
+					//console.log(this);
+					let newText = $(this).text().replace(/\d+ - /, '');
+					//console.log(newText);
+					$(this).text(newText);
+				});
+			}, 
+			{
+				"400":function () 
+				{
+					alert("Could not retrieve formats.");
+				}
+			});
+	});
+
+function sortOptionsByName(selector) {
+	$(selector).html($(selector + " option").sort(function (a, b) {
+		return a.text == b.text ? 0 : a.text < b.text ? -1 : 1
+	}))
+	$(selector)[0].selectedIndex = 0;
+}
+
+	
+function tourneyErrorMap(outputControl, callback=null) {
+	return {
+		"0":function() {
+			outputControl.html("0: Server has been shut down or there was a problem with your internet connection.", "warningMessage");
+			if(callback!=null)
+				callback();
+		},
+		"400":function(xhr, status, request) {
+			var message = xhr.getResponseHeader("message");
+			if(message != null) {
+				outputControl.html("400; malformed input: " + message);
+			}
+			else {
+				outputControl.html("400: One of the provided parameters was malformed.  Double-check your input and try again.");
+			}
+			if(callback!=null)
+				callback();
+		},
+		"401":function() {
+			outputControl.html("401: You are not logged in.");
+			if(callback!=null)
+				callback();
+		},
+		"403": function() {
+			outputControl.html("403: You do not have permission to perform such actions.");
+			if(callback!=null)
+				callback();
+		},
+		"404": function() {
+			outputControl.html("404: Info not found.  Check that your input is correct with removed whitespace and try again.");
+			if(callback!=null)
+				callback();
+		},
+		"410": function() {
+			outputControl.html("410: You have been inactive for too long and were loggedout. Refresh the page if you wish to re-stablish connection.");
+			if(callback!=null)
+				callback();
+		},
+		"500": function() {
+			outputControl.html("500: Server error. One of the provided parameters was probably malformed.  Double-check your input and try again.");
+			if(callback!=null)
+				callback();
+		}
+	};
+}
+</script>
+<div class="article">	
+	<h1>Manually Add Elimination Tables</h1>
+	<div>
+		Series Name: 
+			<input type="text" id="table-name"><br/>
+		Tournament (for decks): 
+			<input type="text" id="table-tournament"><br/>
+		Format:
+			<select id="table-format" name="format">
+			</select><br/>
+		Timer (player clock / timeout):
+			<select id="table-timer">
+				<option value="Competitive">Competitive (40/5)</option>
+				<option value="WC">Championship (20/10)</option>
+				<option value="WC_Expanded">Championship Expanded (25/10)</option>
+				<option value="Blitz!">Blitz (30/5)</option>
+				<option value="Default">Default (80/5)</option>
+				<option value="Slow">Slow (120/10)</option>
+			</select><br/>
+		<div class="tablesgroup">
+			<div class="tabledata">
+				<br/><b>Table definition:</b><br/>
+				Player 1: <input type="text" name="playerone" ><br/>
+				Player 2: <input type="text" name="playertwo" ><br/>
+			</div>
+		</div>
+		
+		<button id="add-additional-table-button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false" style="padding:4px;">
+			Add Another Table
+		</button>
+				
+		<button id="add-tables-button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false" style="padding:4px;">
+			Add Tables
+		</button> <span id="tables-result" style="display:inline-block;">Ready.</span>
+	</div>
+</div>
+

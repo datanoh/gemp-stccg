@@ -1,6 +1,6 @@
 package com.gempukku.lotro.async.handler;
 
-import com.gempukku.lotro.DateUtils;
+import com.gempukku.lotro.common.DateUtils;
 import com.gempukku.lotro.PlayerLock;
 import com.gempukku.lotro.async.HttpProcessingException;
 import com.gempukku.lotro.collection.CollectionsManager;

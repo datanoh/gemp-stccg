@@ -747,8 +747,8 @@ table.tables tr.privateForPlayer {
 .league-form {
 	display: flex; 
 	flex-direction: column; 
-	width: fit-content;
-	max-width: 60%; 
+	min-width: fit-content;
+	max-width: 100%; 
 	margin: auto;
 	align-items: stretch;
 	gap: 0.4em;
@@ -768,11 +768,11 @@ table.tables tr.privateForPlayer {
 	
 }
 
-#constructed-league-result-label {
+.result-label {
 	align-items: center;
 }
 
-#constructed-league-result {
+.result-box {
 	text-wrap: balance;
 	padding: 0.5em;
 	margin: 0.5em;
@@ -793,5 +793,23 @@ table.tables tr.privateForPlayer {
 }
 
 .label-column {
-	width: 50%;
+	width: 30%;
+}
+
+.desc-div {
+	gap: 25px;
+}
+
+.desc-area {
+	min-width:50%;
+}
+
+.desc-preview {
+	flex-basis:50%;
+	word-wrap:break-word;
+	max-width:100%;
+}
+
+.league-id {
+	font-size: smaller;
 }
