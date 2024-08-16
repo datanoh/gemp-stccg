@@ -63,9 +63,9 @@ var StatsUI = Class.extend({
             var comps = 0;
             var total = 0;
             
-            json.stats.sort((a,b) => { return b.count - a.count; })
+            json.Stats.sort((a,b) => { return b.count - a.count; })
             
-            json["stats"].forEach(item => {
+            json["Stats"].forEach(item => {
                 if(item.casual) {
                     casuals += item.count;
                 }
@@ -75,7 +75,7 @@ var StatsUI = Class.extend({
                 total += item.count;
             });
             
-            json["stats"].forEach(item => {
+            json["Stats"].forEach(item => {
                 
                 var test = getPercentage(item.count, total);
                 
