@@ -63,36 +63,36 @@ var StatsUI = Class.extend({
             var comps = 0;
             var total = 0;
             
-            json.Stats.sort((a,b) => { return b.count - a.count; })
+            json.Stats.sort((a,b) => { return b.Count - a.Count; })
             
             json["Stats"].forEach(item => {
-                if(item.casual) {
-                    casuals += item.count;
+                if(item.Casual) {
+                    casuals += item.Count;
                 }
                 else {
-                    comps += item.count;
+                    comps += item.Count;
                 }
-                total += item.count;
+                total += item.Count;
             });
             
             json["Stats"].forEach(item => {
                 
-                var test = getPercentage(item.count, total);
+                var test = getPercentage(item.Count, total);
                 
-                if(item.casual) {
+                if(item.Casual) {
                     casualStats.append("<tr>" 
-                    + "<td>" + item.format + "</td>"
-                    + "<td>" + item.count + "</td>"
-                    + "<td>" + getPercentage(item.count, casuals) + "</td>"
-                    + "<td>" + getPercentage(item.count, total) + "</td>"
+                    + "<td>" + item.Format + "</td>"
+                    + "<td>" + item.Count + "</td>"
+                    + "<td>" + getPercentage(item.Count, casuals) + "</td>"
+                    + "<td>" + getPercentage(item.Count, total) + "</td>"
                     + "</tr>");
                 }
                 else {
                     compStats.append("<tr>" 
-                    + "<td>" + item.format + "</td>"
-                    + "<td>" + item.count + "</td>"
-                    + "<td>" + getPercentage(item.count, comps) + "</td>"
-                    + "<td>" + getPercentage(item.count, total) + "</td>"
+                    + "<td>" + item.Format + "</td>"
+                    + "<td>" + item.Count + "</td>"
+                    + "<td>" + getPercentage(item.Count, comps) + "</td>"
+                    + "<td>" + getPercentage(item.Count, total) + "</td>"
                     + "</tr>");
                 } 
             });
