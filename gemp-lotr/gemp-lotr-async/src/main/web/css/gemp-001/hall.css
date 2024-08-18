@@ -813,3 +813,18 @@ table.tables tr.privateForPlayer {
 .league-id {
 	font-size: smaller;
 }
+
+.standings td {
+	text-align: center;
+}
+
+.standings tr:nth-child(even) {
+  background-color: #444422;
+}
+
+table.standings {
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	padding-bottom: 50px;
+}

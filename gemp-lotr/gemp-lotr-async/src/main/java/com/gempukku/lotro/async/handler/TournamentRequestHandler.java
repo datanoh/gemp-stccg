@@ -62,7 +62,7 @@ public class TournamentRequestHandler extends LotroServerRequestHandler implemen
         } else if (uri.startsWith("/") && uri.endsWith("/html") && uri.contains("/deck/") && request.method() == HttpMethod.GET) {
             getTournamentDeck(request, uri.substring(1, uri.indexOf("/deck/")), uri.substring(uri.indexOf("/deck/") + 6, uri.lastIndexOf("/html")), responseWriter);
         } else if (uri.startsWith("/") && uri.endsWith("/html") && uri.contains("/report/") && request.method() == HttpMethod.GET) {
-            getTournamentReport(request, uri.substring(1, uri.indexOf("/report/")), uri.substring(uri.indexOf("/report/") + 8, uri.lastIndexOf("/html")), responseWriter);
+            getTournamentReport(request, uri.substring(1, uri.indexOf("/report/")), responseWriter);
         } else if (uri.startsWith("/") && request.method() == HttpMethod.GET) {
             getTournamentInfo(request, uri.substring(1), responseWriter);
         } else {
@@ -102,12 +102,14 @@ public class TournamentRequestHandler extends LotroServerRequestHandler implemen
     }
 
     private void setStandingAttributes(PlayerStanding standing, Element standingElem) {
-        standingElem.setAttribute("player", standing.playerName());
-        standingElem.setAttribute("standing", String.valueOf(standing.standing()));
-        standingElem.setAttribute("points", String.valueOf(standing.points()));
-        standingElem.setAttribute("gamesPlayed", String.valueOf(standing.gamesPlayed()));
+        standingElem.setAttribute("player", standing.playerName);
+        standingElem.setAttribute("standing", String.valueOf(standing.standing));
+        standingElem.setAttribute("points", String.valueOf(standing.points));
+        standingElem.setAttribute("gamesPlayed", String.valueOf(standing.gamesPlayed));
         DecimalFormat format = new DecimalFormat("##0.00%");
-        standingElem.setAttribute("opponentWin", format.format(standing.opponentScore()));
+        standingElem.setAttribute("opponentWin", format.format(standing.opponentWinRate));
+        standingElem.setAttribute("medianScore", String.valueOf(standing.medianScore));
+        standingElem.setAttribute("cumulativeScore", String.valueOf(standing.cumulativeScore));
     }
 
     private void getTournamentDeck(HttpRequest request, String tournamentId, String playerName, ResponseWriter responseWriter) throws Exception {
@@ -127,7 +129,7 @@ public class TournamentRequestHandler extends LotroServerRequestHandler implemen
         responseWriter.writeHtmlResponse(_deckRenderer.AddDeckReadoutHeaderAndFooter(fragment));
     }
 
-    private void getTournamentReport(HttpRequest request, String tournamentId, String playerName, ResponseWriter responseWriter) throws Exception {
+    private void getTournamentReport(HttpRequest request, String tournamentId, ResponseWriter responseWriter) throws Exception {
         Tournament tournament = _tournamentService.getTournamentById(tournamentId);
         if (tournament == null)
             throw new HttpProcessingException(404);

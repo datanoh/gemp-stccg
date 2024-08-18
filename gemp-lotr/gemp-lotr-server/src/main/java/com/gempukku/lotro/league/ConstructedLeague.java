@@ -138,13 +138,13 @@ public class ConstructedLeague implements LeagueData {
             LeagueSerieInfo lastSerie = _series.getLast();
             if (DateUtils.IsAtLeastDayAfter(currentTime, lastSerie.getEnd())) {
                 for (PlayerStanding leagueStanding : leagueStandings) {
-                    CardCollection leaguePrize = _leaguePrizes.getPrizeForLeague(leagueStanding.standing(), leagueStandings.size(), leagueStanding.gamesPlayed(), maxGamesPlayed);
+                    CardCollection leaguePrize = _leaguePrizes.getPrizeForLeague(leagueStanding.standing, leagueStandings.size(), leagueStanding.gamesPlayed, maxGamesPlayed);
                     if (leaguePrize != null)
-                        collectionsManager.addItemsToPlayerCollection(true, "End of league prizes", leagueStanding.playerName(), _prizeCollectionType, leaguePrize.getAll());
+                        collectionsManager.addItemsToPlayerCollection(true, "End of league prizes", leagueStanding.playerName, _prizeCollectionType, leaguePrize.getAll());
 
                     final CardCollection leagueTrophies = _leaguePrizes.getTrophiesForLeague(leagueStanding, leagueStandings, maxGamesPlayed);
                     if (leagueTrophies != null)
-                        collectionsManager.addItemsToPlayerCollection(true, "End of league trophies", leagueStanding.playerName(), _prizeCollectionType, leagueTrophies.getAll());
+                        collectionsManager.addItemsToPlayerCollection(true, "End of league trophies", leagueStanding.playerName, _prizeCollectionType, leagueTrophies.getAll());
                 }
                 status++;
             }

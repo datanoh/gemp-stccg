@@ -199,12 +199,12 @@ public class LeagueRequestHandler extends LotroServerRequestHandler implements U
     }
 
     private void setStandingAttributes(PlayerStanding standing, Element standingElem) {
-        standingElem.setAttribute("player", standing.playerName());
-        standingElem.setAttribute("standing", String.valueOf(standing.standing()));
-        standingElem.setAttribute("points", String.valueOf(standing.points()));
-        standingElem.setAttribute("gamesPlayed", String.valueOf(standing.gamesPlayed()));
+        standingElem.setAttribute("player", standing.playerName);
+        standingElem.setAttribute("standing", String.valueOf(standing.standing));
+        standingElem.setAttribute("points", String.valueOf(standing.points));
+        standingElem.setAttribute("gamesPlayed", String.valueOf(standing.gamesPlayed));
         DecimalFormat format = new DecimalFormat("##0.00%");
-        standingElem.setAttribute("opponentWin", format.format(standing.opponentScore()));
+        standingElem.setAttribute("opponentWin", format.format(standing.opponentWinRate));
     }
 
 }

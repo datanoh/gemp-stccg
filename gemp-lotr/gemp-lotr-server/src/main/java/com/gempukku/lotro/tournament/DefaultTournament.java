@@ -368,10 +368,10 @@ public class DefaultTournament implements Tournament {
         for (PlayerStanding playerStanding : list) {
             CardCollection prizes = _tournamentPrizes.getPrizeForTournament(playerStanding, list.size());
             if (prizes != null)
-                collectionsManager.addItemsToPlayerCollection(true, "Tournament " + getTournamentName() + " prize", playerStanding.playerName(), CollectionType.MY_CARDS, prizes.getAll());
+                collectionsManager.addItemsToPlayerCollection(true, "Tournament " + getTournamentName() + " prize", playerStanding.playerName, CollectionType.MY_CARDS, prizes.getAll());
             CardCollection trophies = _tournamentPrizes.getTrophyForTournament(playerStanding, list.size());
             if (trophies != null)
-                collectionsManager.addItemsToPlayerCollection(true, "Tournament " + getTournamentName() + " trophy", playerStanding.playerName(), CollectionType.TROPHY, trophies.getAll());
+                collectionsManager.addItemsToPlayerCollection(true, "Tournament " + getTournamentName() + " trophy", playerStanding.playerName, CollectionType.TROPHY, trophies.getAll());
         }
     }
 
@@ -402,7 +402,7 @@ public class DefaultTournament implements Tournament {
                 createNewGame(tournamentCallback, playerOne, playerTwo);
             }
 
-            if (byeResults.size() > 0) {
+            if (!byeResults.isEmpty()) {
                 tournamentCallback.broadcastMessage("Bye awarded to: "+ StringUtils.join(byeResults, ", "));
             }
 
@@ -511,7 +511,7 @@ public class DefaultTournament implements Tournament {
         decks.add(summary.toString());
 
         for(var standing : getCurrentStandings()) {
-            var playerName = standing.playerName();
+            var playerName = standing.playerName;
 
             var rounds = new ArrayList<Map.Entry<String, String>>();
 

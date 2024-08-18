@@ -6,6 +6,7 @@ ORDER BY ID DESC
 
 
 
+
 ALTER TABLE gemp_db.league  
 ADD COLUMN start_date DATE NOT NULL DEFAULT now() AFTER start;
 
@@ -46,9 +47,6 @@ DROP COLUMN `start`;
 
 ALTER TABLE gemp_db.league 
 DROP COLUMN `end`;
-
-ALTER TABLE gemp_db.league 
-DROP COLUMN cost;
 
 ALTER TABLE gemp_db.league 
 DROP COLUMN `type`;

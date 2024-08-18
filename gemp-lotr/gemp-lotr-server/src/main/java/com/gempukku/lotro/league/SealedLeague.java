@@ -148,12 +148,12 @@ public class SealedLeague implements LeagueData {
             LeagueSerieInfo lastSerie = _series.get(_series.size() - 1);
             if (DateUtils.IsAtLeastDayAfter(currentTime, lastSerie.getEnd())) {
                 for (PlayerStanding leagueStanding : leagueStandings) {
-                    CardCollection leaguePrize = _leaguePrizes.getPrizeForLeague(leagueStanding.standing(), leagueStandings.size(), leagueStanding.gamesPlayed(), maxGamesTotal);
+                    CardCollection leaguePrize = _leaguePrizes.getPrizeForLeague(leagueStanding.standing, leagueStandings.size(), leagueStanding.gamesPlayed, maxGamesTotal);
                     if (leaguePrize != null)
-                        collectionsManager.addItemsToPlayerCollection(true, "End of league prizes", leagueStanding.playerName(), _prizeCollectionType, leaguePrize.getAll());
+                        collectionsManager.addItemsToPlayerCollection(true, "End of league prizes", leagueStanding.playerName, _prizeCollectionType, leaguePrize.getAll());
                     final CardCollection leagueTrophies = _leaguePrizes.getTrophiesForLeague(leagueStanding, leagueStandings, maxGamesTotal);
                     if (leagueTrophies != null)
-                        collectionsManager.addItemsToPlayerCollection(true, "End of league trophies", leagueStanding.playerName(), _prizeCollectionType, leagueTrophies.getAll());
+                        collectionsManager.addItemsToPlayerCollection(true, "End of league trophies", leagueStanding.playerName, _prizeCollectionType, leagueTrophies.getAll());
                 }
                 status++;
             }

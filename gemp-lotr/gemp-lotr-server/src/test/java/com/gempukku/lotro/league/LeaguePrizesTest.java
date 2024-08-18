@@ -80,7 +80,7 @@ public class LeaguePrizesTest extends AbstractAtTest {
         );
 
         for (var standing : standings) {
-            System.out.println("Place " + standing.standing());
+            System.out.println("Place " + standing.standing);
             var collection = leaguePrizes.getTrophiesForLeague(standing, standings, 50);
 
             List<CardCollection.Item> prizes = new ArrayList<>();
@@ -89,15 +89,15 @@ public class LeaguePrizesTest extends AbstractAtTest {
                 collection.getAll().forEach(prizes::add);
 
             // The top 10 get the top prize, but also anyone who ties the person in tenth (strength of schedule is ignored)
-            if(standing.standing() <= 10 || standing.points() == 48) {
+            if(standing.standing <= 10 || standing.points == 48) {
                 assertTrue(prizes.stream().anyMatch(x -> x.getBlueprintId().equals("1_1") && x.getCount() == 1));
             }
 
-            if(standing.gamesPlayed() >= 3) {
+            if(standing.gamesPlayed >= 3) {
                 assertTrue(prizes.stream().anyMatch(x -> x.getBlueprintId().equals("1_2") && x.getCount() == 2));
             }
 
-            switch (standing.standing()) {
+            switch (standing.standing) {
                 case 29:
                     assertTrue(prizes.stream().anyMatch(x -> x.getBlueprintId().equals("1_2") && x.getCount() == 2));
                     break;

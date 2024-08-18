@@ -92,7 +92,7 @@ $(document).ready(
 		
 		$("#add-tables-button").button().click(
 			function () {
-				let resultdiv = $("#tables-result");
+				let resultdiv = $("#elim-tables-result");
 				resultdiv.html("Processing...");
 				
 				var data = gatherData($(".tablesgroup"))
@@ -207,17 +207,21 @@ function tourneyErrorMap(outputControl, callback=null) {
 }
 </script>
 <div class="article">	
-	<h1>Manually Add Elimination Tables</h1>
-	<div>
-		Series Name: 
-			<input type="text" id="table-name"><br/>
-		Tournament (for decks): 
-			<input type="text" id="table-tournament"><br/>
-		Format:
-			<select id="table-format" name="format">
-			</select><br/>
-		Timer (player clock / timeout):
-			<select id="table-timer">
+	<div id="elim-tables-section" class="league-form">
+		<h1>Manually Add Elimination Tables</h1>
+		<div class="flex-horiz">
+			<div class="label-column">Series Name: </div>
+			<input type="text" id="elim-table-name" class="flex-fill">
+		</div>
+		
+		<div class="flex-horiz">
+			<div class="label-column">Tournament (for decks): </div>
+			<input type="text" id="elim-table-tournament" class="flex-fill">
+		</div>
+		
+		<div class="flex-horiz">
+			<div class="label-column">Timer (player clock / timeout): </div>
+			<select id="elim-table-timer">
 				<option value="Competitive">Competitive (40/5)</option>
 				<option value="WC">Championship (20/10)</option>
 				<option value="WC_Expanded">Championship Expanded (25/10)</option>
@@ -225,21 +229,46 @@ function tourneyErrorMap(outputControl, callback=null) {
 				<option value="Default">Default (80/5)</option>
 				<option value="Slow">Slow (120/10)</option>
 			</select><br/>
-		<div class="tablesgroup">
-			<div class="tabledata">
-				<br/><b>Table definition:</b><br/>
-				Player 1: <input type="text" name="playerone" ><br/>
-				Player 2: <input type="text" name="playertwo" ><br/>
-			</div>
 		</div>
 		
-		<button id="add-additional-table-button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false" style="padding:4px;">
-			Add Another Table
-		</button>
+		<div id="elim-table-pairs">
+			<div class="elim-table-entry">
+				<div class="label-column">Table Players: </div>
+				<div class="flex-horiz">
+					<div class="label-column">Player 1: </div>
+					<input type="text" name="playerone" class="flex-fill">
+				</div>
+				<div class="flex-horiz">
+					<div class="label-column">Player 2: </div>
+					<input type="text" name="playertwo" class="flex-fill">
+				</div>
+			</div>
+		</div>
 				
-		<button id="add-tables-button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false" style="padding:4px;">
+		<button id="add-additional-table-button" >
+			Add Another Table
+		</button> 
+		
+		<button id="add-tables-button">
 			Add Tables
-		</button> <span id="tables-result" style="display:inline-block;">Ready.</span>
+		</button>
+		
+		<div id="elim-tables-result-label" class="flex-horiz result-label">
+			<div class="label">
+				<b>Result:</b>
+			</div>
+			<div id="elim-tables-result" class="flex-fill result-box">
+				Ready.
+			</div>
+		</div>
 	</div>
+	
+	<br/><br/><hr><br/><br/>
+	
+	<div id="add-tournament-section">
+	</div>
+	
 </div>
+
+	
 

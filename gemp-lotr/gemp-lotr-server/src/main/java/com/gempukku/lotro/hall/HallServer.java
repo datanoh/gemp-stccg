@@ -788,7 +788,11 @@ public class HallServer extends AbstractServer {
                 hallChanged();
             }
 
-        } finally {
+        }
+        catch (Exception ex) {
+            throw new RuntimeException("Error during server cleanup.", ex);
+        }
+        finally {
             _hallDataAccessLock.writeLock().unlock();
         }
     }

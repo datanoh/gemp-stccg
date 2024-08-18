@@ -27,16 +27,16 @@ public class IncentiveLeaguePrizes extends FixedLeaguePrizes{
             //While the person in e.g. 10th place is the cutoff, we are lenient and award prizes
             // to anyone who tied their score below them, so that Strength of Schedule isn't
             // constantly ruining everyone's day.
-            cutoffPoints = allStandings.get(_autoPrizes.topCutoff()).points();
+            cutoffPoints = allStandings.get(_autoPrizes.topCutoff()).points;
         }
 
-        if(player.points() >= cutoffPoints) {
+        if(player.points >= cutoffPoints) {
             for(var prize : _autoPrizes.topPrizes()) {
                 prizes.addItem(prize);
             }
         }
 
-        if(player.gamesPlayed() >= _autoPrizes.participationGames()) {
+        if(player.gamesPlayed >= _autoPrizes.participationGames()) {
             for(var prize : _autoPrizes.participationPrizes()) {
                 prizes.addItem(prize);
             }
