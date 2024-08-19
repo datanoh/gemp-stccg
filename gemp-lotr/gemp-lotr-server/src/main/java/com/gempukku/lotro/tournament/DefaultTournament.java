@@ -533,8 +533,9 @@ public class DefaultTournament implements Tournament {
                     continue;
                 }
 
-                var game = games.stream().filter(x -> x.winner.equals(playerName) || x.loser.equals(playerName))
-                        .findFirst().orElse(null);
+                var game = games.stream().filter((x) -> x.winner.equals(match.getWinner()) && x.loser.equals(match.getLoser()))
+                        .findFirst()
+                        .orElse(null);
                 if(game == null)
                     continue;
 
