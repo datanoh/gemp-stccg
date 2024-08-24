@@ -14,10 +14,10 @@ public class ModifiedMedianStandingsProducer {
     private static final Comparator<PlayerStanding> MEDIAN_STANDING_COMPARATOR =
             new MultipleComparator<>(
                     new DescComparator<>(Comparator.comparingInt(x -> x.points)),
-                    FACE_OFF_COMPARATOR,
+                    new DescComparator<>(FACE_OFF_COMPARATOR),
                     new DescComparator<>(Comparator.comparingInt(x -> x.medianScore)),
                     new DescComparator<>(Comparator.comparingInt(x -> x.cumulativeScore)),
-                    new DescComparator<>(new OpponentsWinComparator()));
+                    new DescComparator<>(Comparator.comparingDouble(x -> x.opponentWinRate)));
 
 
     public static List<PlayerStanding> produceStandings(Collection<String> participants, Collection<TournamentMatch> matches,
@@ -108,12 +108,14 @@ public class ModifiedMedianStandingsProducer {
                 opponentGames += playerWinCounts.get(opponent).intValue() + playerLossCounts.get(opponent).intValue();
             }
 
-            Collections.sort(oppScores, Collections.reverseOrder());
-            float playerscore = (float) playerWins / gamesPlayed;
+            oppScores.sort(Collections.reverseOrder());
             float opponentWR = 0f;
             if (opponentGames != 0) {
                 opponentWR = opponentWins * 1f / opponentGames;
             }
+
+            //List of opponent scores is now sorted such that the first entry is the highest score, and the last entry
+            // is the lowest score.  We will drop one or more of those positions based on the player's performance:
 
             if(gamesPlayed > 0) {
                 if(playerWins == playerLosses) { // i.e. that player has a 50% win rate; this eliminates floating point comparisons
@@ -125,14 +127,14 @@ public class ModifiedMedianStandingsProducer {
                         oppScores.removeFirst();
                     }
                 }
-                else if(playerscore > 0.5f) {
-                    if(oppScores.size() > 1) {
-                        oppScores.removeFirst();
-                    }
-                }
-                else { //playerscore < 50% win rate
+                else if(playerWins > playerLosses) {
                     if(oppScores.size() > 1) {
                         oppScores.removeLast();
+                    }
+                }
+                else { //playerWins < playerLosses
+                    if(oppScores.size() > 1) {
+                        oppScores.removeFirst();
                     }
                 }
             }
@@ -182,20 +184,6 @@ public class ModifiedMedianStandingsProducer {
 
         return finalStandings;
 
-    }
-
-    private static class OpponentsWinComparator implements Comparator<PlayerStanding> {
-        @Override
-        public int compare(PlayerStanding o1, PlayerStanding o2) {
-            final float diff = o1.opponentWinRate - o2.opponentWinRate;
-            if (diff < 0) {
-                return -1;
-            }
-            if (diff > 0) {
-                return 1;
-            }
-            return 0;
-        }
     }
 
     private static class FaceOffComparator implements Comparator<PlayerStanding> {

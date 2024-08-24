@@ -22,8 +22,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DefaultTournament implements Tournament {
     // 10 minutes
-    private final int _deckBuildTime = 10 * 60 * 1000;
-    private long _waitForPairingsTime = 1000 * 60 * 1;
+    public static int DeckBuildTime = 10 * 60 * 1000;
+    public static long PairingDelayTime = 1000 * 60 * 1;
 
     private final PairingMechanism _pairingMechanism;
     private final TournamentPrizes _tournamentPrizes;
@@ -145,7 +145,7 @@ public class DefaultTournament implements Tournament {
     }
 
     public void setWaitForPairingsTime(long waitForPairingsTime) {
-        _waitForPairingsTime = waitForPairingsTime;
+        PairingDelayTime = waitForPairingsTime;
     }
 
     @Override
@@ -303,7 +303,7 @@ public class DefaultTournament implements Tournament {
                     }
                 }
                 if (_tournamentStage == Stage.DECK_BUILDING) {
-                    if (_deckBuildStartTime + _deckBuildTime < System.currentTimeMillis()
+                    if (_deckBuildStartTime + DeckBuildTime < System.currentTimeMillis()
                             || _playerDecks.size() == _players.size()) {
                         _tournamentStage = Stage.PLAYING_GAMES;
                         _tournamentService.updateTournamentStage(_tournamentId, _tournamentStage);
@@ -426,7 +426,7 @@ public class DefaultTournament implements Tournament {
     }
 
     private class PairPlayers implements TournamentTask {
-        private final long _taskStart = System.currentTimeMillis() + _waitForPairingsTime;
+        private final long _taskStart = System.currentTimeMillis() + PairingDelayTime;
 
         @Override
         public void executeTask(TournamentCallback tournamentCallback, CollectionsManager collectionsManager) {
