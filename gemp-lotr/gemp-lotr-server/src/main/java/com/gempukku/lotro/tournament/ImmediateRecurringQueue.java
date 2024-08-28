@@ -46,7 +46,7 @@ public class ImmediateRecurringQueue extends AbstractTournamentQueue implements 
             }
 
             var info = new TournamentInfo(tournamentId, null, tournamentName, _format, ZonedDateTime.now(),
-                    _collectionType, Tournament.Stage.PLAYING_GAMES, 0,
+                    _collectionType, Tournament.Stage.PLAYING_GAMES, 0, false,
                     Tournament.getPairingMechanism("singleElimination"), _tournamentPrizes);
 
             var tournament = _tournamentService.addTournament(info);

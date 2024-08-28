@@ -299,8 +299,8 @@ public class TournamentService {
     private Tournament createTournamentAndStoreInCache(TournamentInfo info) {
         Tournament tournament;
         try {
-            DraftPack draftPack = null;
             //The below appears to be half-finished and completely pointless
+//            DraftPack draftPack = null;
 //            String draftType = info.getDraftType();
 //            if (draftType != null)
 //                _draftPackStorage.getDraftPack(draftType);

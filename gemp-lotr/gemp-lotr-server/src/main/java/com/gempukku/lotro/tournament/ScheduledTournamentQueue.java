@@ -35,7 +35,11 @@ public class ScheduledTournamentQueue extends AbstractTournamentQueue implements
         _startCondition = "at " + _startTime.format(DateUtils.DateTimeFormat);
         _minimumPlayers = info.minimum_players;
 
-        _stage = Tournament.Stage.PLAYING_GAMES;
+        if (info.manual_kickoff) {
+            _stage = Tournament.Stage.AWAITING_KICKOFF;
+        } else {
+            _stage = Tournament.Stage.PLAYING_GAMES;
+        }
     }
 
     @Override
@@ -62,7 +66,7 @@ public class ScheduledTournamentQueue extends AbstractTournamentQueue implements
                     _tournamentService.addPlayer(_scheduledTournamentId, player, _playerDecks.get(player));
 
                 var info = new TournamentInfo(_scheduledTournamentId, null, _tournamentName, _format, ZonedDateTime.now(),
-                        _collectionType, _stage, 0,
+                        _collectionType, _stage, 0, false,
                         _pairingMechanism, _tournamentPrizes);
 
                 var tournament = _tournamentService.addTournament(info);

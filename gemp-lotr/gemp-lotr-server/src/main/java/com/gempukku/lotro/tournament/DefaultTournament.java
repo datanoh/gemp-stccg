@@ -65,7 +65,7 @@ public class DefaultTournament implements Tournament {
 
     public DefaultTournament(TournamentService tournamentService, String tournamentId,
                              String tournamentName, String format, CollectionType collectionType,
-                             int tournamentRound, Stage tournamentStage, 
+                             int tournamentRound, Stage tournamentStage,
                              PairingMechanism pairingMechanism, TournamentPrizes tournamentPrizes,
                              CollectionsManager collectionsManager, ProductLibrary productLibrary, DraftPack draftPack) {
         _tournamentService = tournamentService;
@@ -107,6 +107,8 @@ public class DefaultTournament implements Tournament {
                     _players);
         } else if (_tournamentStage == Stage.DECK_BUILDING) {
             _deckBuildStartTime = System.currentTimeMillis();
+        } else if (_tournamentStage == Stage.AWAITING_KICKOFF || _tournamentStage == Stage.PAUSED) {
+
         } else if (_tournamentStage == Stage.FINISHED) {
             _finishedTournamentMatches.addAll(_tournamentService.getMatches(_tournamentId));
         }
@@ -314,7 +316,12 @@ public class DefaultTournament implements Tournament {
                         result.add(new BroadcastAction("Deck building in tournament " + _tournamentName + " has finished"));
                     }
                 }
-                if (_tournamentStage == Stage.PLAYING_GAMES) {
+                if (_tournamentStage == Stage.AWAITING_KICKOFF || _tournamentStage == Stage.PAUSED) {
+
+                } else if (_tournamentStage == Stage.PREPARING) {
+                    _tournamentStage = Stage.PLAYING_GAMES;
+                    _tournamentService.updateTournamentStage(_tournamentId, _tournamentStage);
+                } else if (_tournamentStage == Stage.PLAYING_GAMES) {
                     if (_currentlyPlayingPlayers.isEmpty()) {
                         if (_pairingMechanism.isFinished(_tournamentRound, _players, _droppedPlayers)) {
                             result.add(finishTournament(collectionsManager));
