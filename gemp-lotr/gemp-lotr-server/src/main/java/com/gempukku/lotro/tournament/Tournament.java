@@ -6,11 +6,9 @@ import com.gempukku.lotro.competitive.PlayerStanding;
 import com.gempukku.lotro.db.vo.CollectionType;
 import com.gempukku.lotro.draft.Draft;
 import com.gempukku.lotro.game.CardNotFoundException;
-import com.gempukku.lotro.game.LotroCardBlueprintLibrary;
-import com.gempukku.lotro.game.SortAndFilterCards;
-import com.gempukku.lotro.game.formats.LotroFormatLibrary;
 import com.gempukku.lotro.logic.vo.LotroDeck;
 import com.gempukku.lotro.packs.ProductLibrary;
+import com.gempukku.lotro.tournament.action.TournamentProcessAction;
 
 import java.util.List;
 
@@ -75,7 +73,7 @@ public interface Tournament {
     public int getPlayersInCompetitionCount();
     public String getPlayerList();
 
-    public boolean advanceTournament(TournamentCallback tournamentCallback, CollectionsManager collectionsManager);
+    public List<TournamentProcessAction> advanceTournament(CollectionsManager collectionsManager);
 
     public void reportGameFinished(String winner, String loser);
 

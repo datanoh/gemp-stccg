@@ -6,6 +6,7 @@ import com.gempukku.lotro.db.vo.CollectionType;
 import com.gempukku.lotro.draft.DraftPack;
 import com.gempukku.lotro.logic.vo.LotroDeck;
 import com.gempukku.lotro.packs.ProductLibrary;
+import com.gempukku.lotro.tournament.action.TournamentProcessAction;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.Times;
@@ -110,13 +111,13 @@ public class DefaultTournamentTest extends AbstractAtTest {
                 }
         ).when(tournamentCallback).broadcastMessage(Mockito.anyString());
 
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
 
         Mockito.verify(tournamentCallback).broadcastMessage(Mockito.anyString());
         Mockito.verifyNoMoreInteractions(collectionsManager, tournamentCallback);
 
         Thread.sleep(_waitForPairingsTime);
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
 
         Mockito.verify(tournamentCallback, new Times(1)).createGame("p1", playerDecks.get("p1"), "p2", playerDecks.get("p2"));
         Mockito.verify(tournamentCallback, new Times(1)).createGame("p3", playerDecks.get("p3"), "p4", playerDecks.get("p4"));
@@ -127,32 +128,32 @@ public class DefaultTournamentTest extends AbstractAtTest {
 
         assertEquals(1, tournament.getCurrentRound());
 
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
         Mockito.verifyNoMoreInteractions(collectionsManager, tournamentCallback);
 
         tournament.reportGameFinished("p1", "p2");
 
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
         Mockito.verifyNoMoreInteractions(collectionsManager, tournamentCallback);
 
         tournament.reportGameFinished("p3", "p4");
 
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
         Mockito.verifyNoMoreInteractions(collectionsManager, tournamentCallback);
 
         tournament.reportGameFinished("p5", "p6");
 
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
         Mockito.verifyNoMoreInteractions(collectionsManager, tournamentCallback);
 
         tournament.reportGameFinished("p7", "p8");
 
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
         Mockito.verify(tournamentCallback, new Times(2)).broadcastMessage(Mockito.anyString());
         Mockito.verifyNoMoreInteractions(collectionsManager, tournamentCallback);
 
         Thread.sleep(_waitForPairingsTime);
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
 
         Mockito.verify(tournamentCallback, new Times(1)).createGame("p1", playerDecks.get("p1"), "p3", playerDecks.get("p3"));
         Mockito.verify(tournamentCallback, new Times(1)).createGame("p5", playerDecks.get("p5"), "p7", playerDecks.get("p7"));
@@ -161,22 +162,22 @@ public class DefaultTournamentTest extends AbstractAtTest {
         
         assertEquals(2, tournament.getCurrentRound());
 
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
         Mockito.verifyNoMoreInteractions(collectionsManager, tournamentCallback);
 
         tournament.reportGameFinished("p1", "p3");
 
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
         Mockito.verifyNoMoreInteractions(collectionsManager, tournamentCallback);
 
         tournament.reportGameFinished("p5", "p7");
 
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
         Mockito.verify(tournamentCallback, new Times(3)).broadcastMessage(Mockito.anyString());
         Mockito.verifyNoMoreInteractions(collectionsManager, tournamentCallback);
 
         Thread.sleep(_waitForPairingsTime);
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
 
         Mockito.verify(tournamentCallback, new Times(1)).createGame("p1", playerDecks.get("p1"), "p5", playerDecks.get("p5"));
 
@@ -184,12 +185,12 @@ public class DefaultTournamentTest extends AbstractAtTest {
 
         assertEquals(3, tournament.getCurrentRound());
 
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
         Mockito.verifyNoMoreInteractions(collectionsManager, tournamentCallback);
 
         tournament.reportGameFinished("p1", "p5");
 
-        tournament.advanceTournament(tournamentCallback, collectionsManager);
+        advanceTournament(tournament, collectionsManager, tournamentCallback);
         Mockito.verify(tournamentCallback, new Times(4)).broadcastMessage(Mockito.anyString());
 
         Mockito.verify(collectionsManager).addItemsToPlayerCollection(Mockito.eq(true), Mockito.anyString(), Mockito.eq("p1"), Mockito.eq(CollectionType.MY_CARDS), Mockito.anyCollection());
@@ -201,5 +202,12 @@ public class DefaultTournamentTest extends AbstractAtTest {
         
         assertEquals(3, tournament.getCurrentRound());
         assertEquals(Tournament.Stage.FINISHED, tournament.getTournamentStage());
+    }
+
+    private void advanceTournament(Tournament tournament, CollectionsManager collectionsManager, TournamentCallback callback) {
+        List<TournamentProcessAction> actions = tournament.advanceTournament(collectionsManager);
+        for (TournamentProcessAction action : actions) {
+            action.process(callback);
+        }
     }
 }

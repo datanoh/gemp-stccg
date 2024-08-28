@@ -12,6 +12,9 @@ import com.gempukku.lotro.draft.DraftPack;
 import com.gempukku.lotro.game.*;
 import com.gempukku.lotro.logic.vo.LotroDeck;
 import com.gempukku.lotro.packs.ProductLibrary;
+import com.gempukku.lotro.tournament.action.BroadcastAction;
+import com.gempukku.lotro.tournament.action.CreateGameAction;
+import com.gempukku.lotro.tournament.action.TournamentProcessAction;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -288,47 +291,45 @@ public class DefaultTournament implements Tournament {
     }
 
     @Override
-    public boolean advanceTournament(TournamentCallback tournamentCallback, CollectionsManager collectionsManager) {
+    public List<TournamentProcessAction> advanceTournament(CollectionsManager collectionsManager) {
         writeLock.lock();
         try {
-            boolean result = false;
+            List<TournamentProcessAction> result = new LinkedList<>();
             if (_nextTask == null) {
                 if (_tournamentStage == Stage.DRAFT) {
-                    _draft.advanceDraft(tournamentCallback);
+                    // Temporary - don't want to involve draft in this
+                    _draft.advanceDraft(null);
                     if (_draft.isFinished()) {
-                        tournamentCallback.broadcastMessage("Drafting in tournament " + _tournamentName + " is finished, starting deck building");
+                        result.add(new BroadcastAction("Drafting in tournament " + _tournamentName + " is finished, starting deck building"));
                         _tournamentStage = Stage.DECK_BUILDING;
                         _tournamentService.updateTournamentStage(_tournamentId, _tournamentStage);
                         _deckBuildStartTime = System.currentTimeMillis();
                         _draft = null;
-                        result = true;
                     }
                 }
                 if (_tournamentStage == Stage.DECK_BUILDING) {
-                    if (_deckBuildStartTime + DeckBuildTime < System.currentTimeMillis()
+                    if (_deckBuildStartTime + DeckBuildTime > System.currentTimeMillis()
                             || _playerDecks.size() == _players.size()) {
                         _tournamentStage = Stage.PLAYING_GAMES;
                         _tournamentService.updateTournamentStage(_tournamentId, _tournamentStage);
-                        result = true;
+                        result.add(new BroadcastAction("Deck building in tournament " + _tournamentName + " has finished"));
                     }
                 }
                 if (_tournamentStage == Stage.PLAYING_GAMES) {
                     if (_currentlyPlayingPlayers.isEmpty()) {
                         if (_pairingMechanism.isFinished(_tournamentRound, _players, _droppedPlayers)) {
-                            finishTournament(tournamentCallback, collectionsManager);
+                            result.add(finishTournament(collectionsManager));
                         } else {
-                            tournamentCallback.broadcastMessage("Tournament " + _tournamentName + " will start round "+(_tournamentRound+1)+" in 1 minute.");
+                            result.add(new BroadcastAction("Tournament " + _tournamentName + " will start round "+(_tournamentRound+1)+" in 1 minute."));
                             _nextTask = new PairPlayers();
                         }
-                        result = true;
                     }
                 }
             }
             if (_nextTask != null && _nextTask.getExecuteAfter() <= System.currentTimeMillis()) {
                 TournamentTask task = _nextTask;
                 _nextTask = null;
-                task.executeTask(tournamentCallback, collectionsManager);
-                result = true;
+                task.executeTask(result, collectionsManager);
             }
             return result;
         } finally {
@@ -351,11 +352,11 @@ public class DefaultTournament implements Tournament {
         }
     }
 
-    private void finishTournament(TournamentCallback tournamentCallback, CollectionsManager collectionsManager) {
+    private TournamentProcessAction finishTournament(CollectionsManager collectionsManager) {
         _tournamentStage = Stage.FINISHED;
         _tournamentService.updateTournamentStage(_tournamentId, _tournamentStage);
-        tournamentCallback.broadcastMessage("Tournament " + _tournamentName + " is finished");
         awardPrizes(collectionsManager);
+        return new BroadcastAction("Tournament " + _tournamentName + " is finished");
     }
 
     private void awardPrizes(CollectionsManager collectionsManager) {
@@ -370,12 +371,12 @@ public class DefaultTournament implements Tournament {
         }
     }
 
-    private void createNewGame(TournamentCallback tournamentCallback, String playerOne, String playerTwo) {
-        tournamentCallback.createGame(playerOne, _playerDecks.get(playerOne),
+    private TournamentProcessAction createNewGame(String playerOne, String playerTwo) {
+        return new CreateGameAction(playerOne, _playerDecks.get(playerOne),
                 playerTwo, _playerDecks.get(playerTwo));
     }
 
-    private void doPairing(TournamentCallback tournamentCallback, CollectionsManager collectionsManager) {
+    private void doPairing(List<TournamentProcessAction> actions, CollectionsManager collectionsManager) {
         _tournamentRound++;
         _tournamentService.updateTournamentRound(_tournamentId, _tournamentRound);
         Map<String, String> pairingResults = new HashMap<>();
@@ -386,7 +387,7 @@ public class DefaultTournament implements Tournament {
         boolean finished = _pairingMechanism.pairPlayers(_tournamentRound, _players, _droppedPlayers, _playerByes,
                 getCurrentStandings(), previouslyPaired, pairingResults, byeResults);
         if (finished) {
-            finishTournament(tournamentCallback, collectionsManager);
+            actions.add(finishTournament(collectionsManager));
         } else {
             for (Map.Entry<String, String> pairing : pairingResults.entrySet()) {
                 String playerOne = pairing.getKey();
@@ -394,11 +395,11 @@ public class DefaultTournament implements Tournament {
                 _tournamentService.addMatch(_tournamentId, _tournamentRound, playerOne, playerTwo);
                 _currentlyPlayingPlayers.add(playerOne);
                 _currentlyPlayingPlayers.add(playerTwo);
-                createNewGame(tournamentCallback, playerOne, playerTwo);
+                actions.add(createNewGame(playerOne, playerTwo));
             }
 
             if (!byeResults.isEmpty()) {
-                tournamentCallback.broadcastMessage("Bye awarded to: "+ StringUtils.join(byeResults, ", "));
+                actions.add(new BroadcastAction("Bye awarded to: "+ StringUtils.join(byeResults, ", ")));
             }
 
             for (String bye : byeResults) {
@@ -424,8 +425,8 @@ public class DefaultTournament implements Tournament {
         private final long _taskStart = System.currentTimeMillis() + PairingDelayTime;
 
         @Override
-        public void executeTask(TournamentCallback tournamentCallback, CollectionsManager collectionsManager) {
-            doPairing(tournamentCallback, collectionsManager);
+        public void executeTask(List<TournamentProcessAction> actions, CollectionsManager collectionsManager) {
+            doPairing(actions, collectionsManager);
         }
 
         @Override
@@ -442,11 +443,11 @@ public class DefaultTournament implements Tournament {
         }
 
         @Override
-        public void executeTask(TournamentCallback tournamentCallback, CollectionsManager collectionsManager) {
+        public void executeTask(List<TournamentProcessAction> actions, CollectionsManager collectionsManager) {
             for (Map.Entry<String, String> pairings : _gamesToCreate.entrySet()) {
                 String playerOne = pairings.getKey();
                 String playerTwo = pairings.getValue();
-                createNewGame(tournamentCallback, playerOne, playerTwo);
+                actions.add(createNewGame(playerOne, playerTwo));
             }
         }
 

@@ -14,6 +14,7 @@ import com.gempukku.lotro.hall.HallServer;
 import com.gempukku.lotro.logic.vo.LotroDeck;
 import com.gempukku.lotro.packs.DraftPackStorage;
 import com.gempukku.lotro.packs.ProductLibrary;
+import com.gempukku.lotro.tournament.action.TournamentProcessAction;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -169,7 +170,12 @@ public class TournamentService {
             var tourneyID = entry.getKey();
             var tourney = entry.getValue();
 
-            tournamentsChanged |= tourney.advanceTournament(hall.getTournamentCallback(tourney), _collectionsManager);
+            TournamentCallback tournamentCallback = hall.getTournamentCallback(tourney);
+            List<TournamentProcessAction> actions =  tourney.advanceTournament(_collectionsManager);
+            tournamentsChanged |= !actions.isEmpty();
+            for (TournamentProcessAction action : actions) {
+                action.process(tournamentCallback);
+            }
             if (tourney.getTournamentStage() == Tournament.Stage.FINISHED)
                 _activeTournaments.remove(tourneyID);
         }
