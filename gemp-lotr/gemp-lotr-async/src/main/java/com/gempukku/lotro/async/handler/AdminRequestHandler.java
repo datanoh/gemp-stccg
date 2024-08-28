@@ -23,7 +23,6 @@ import com.gempukku.lotro.logic.vo.LotroDeck;
 import com.gempukku.lotro.packs.ProductLibrary;
 import com.gempukku.lotro.service.AdminService;
 import com.gempukku.lotro.tournament.TournamentService;
-import com.gempukku.util.JsonUtils;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
@@ -401,8 +400,7 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
                 decks.put(player.getName(), deck);
             }
 
-
-            var spawner = _hallServer.GetManualGameSpawner(tournament, format, timer, name);
+            var spawner = _hallServer.createManualGameSpawner(tournament.getTournamentName(), format, timer, name);
             for(int i = 0; i < playerones.size(); i++) {
                 String p1 = playerones.get(i);
                 String p2 = playertwos.get(i);

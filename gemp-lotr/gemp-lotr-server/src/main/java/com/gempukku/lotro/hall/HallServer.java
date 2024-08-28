@@ -22,6 +22,7 @@ import com.gempukku.lotro.service.AdminService;
 import com.gempukku.lotro.tournament.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
@@ -30,9 +31,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class HallServer extends AbstractServer {
-
-
-    private static final int _playerTableInactivityPeriod = 1000 * 20 ; // 20 seconds
+    private static final int _playerTableInactivityPeriod = 1000 * 20; // 20 seconds
 
     private static final int _playerChatInactivityPeriod = 1000 * 60 * 5; // 5 minutes
 
@@ -41,13 +40,11 @@ public class HallServer extends AbstractServer {
     private final TournamentService _tournamentService;
     private final LotroCardBlueprintLibrary _library;
     private final LotroFormatLibrary _formatLibrary;
-    private final ProductLibrary _productLibrary;
     private final CollectionsManager _collectionsManager;
     private final LotroServer _lotroServer;
     private final AdminService _adminService;
 
     private final CollectionType _defaultCollectionType = CollectionType.ALL_CARDS;
-    private final CollectionType _tournamentCollectionType = CollectionType.OWNED_TOURNAMENT_CARDS;
 
     private String _motd;
 
@@ -60,24 +57,19 @@ public class HallServer extends AbstractServer {
     private final Map<Player, HallCommunicationChannel> _playerChannelCommunication = new ConcurrentHashMap<>();
     private int _nextChannelNumber = 0;
 
-
-
-
     private final ChatRoomMediator _hallChat;
     private final GameResultListener _notifyHallListeners = new NotifyHallListenersGameResultListener();
-
 
     private static final Logger _log = LogManager.getLogger(HallServer.class);
 
     public HallServer(IgnoreDAO ignoreDAO, LotroServer lotroServer, ChatServer chatServer, LeagueService leagueService, TournamentService tournamentService, LotroCardBlueprintLibrary library,
-                      LotroFormatLibrary formatLibrary, ProductLibrary productLibrary, CollectionsManager collectionsManager, AdminService adminService) {
+                      LotroFormatLibrary formatLibrary, CollectionsManager collectionsManager, AdminService adminService) {
         _lotroServer = lotroServer;
         _chatServer = chatServer;
         _leagueService = leagueService;
         _tournamentService = tournamentService;
         _library = library;
         _formatLibrary = formatLibrary;
-        _productLibrary = productLibrary;
         _collectionsManager = collectionsManager;
         _adminService = adminService;
 
@@ -201,20 +193,20 @@ public class HallServer extends AbstractServer {
                     public void commandReceived(String from, String parameters, boolean admin) {
                         //_hallChat.sendToUser("System", from,
                         String message = """
-                        List of available commands:
-                        /ignore username - Adds user 'username' to list of your ignores
-                        /unignore username - Removes user 'username' from list of your ignores
-                        /listIgnores - Lists all your ignored users
-                        /incognito - Makes you incognito (not visible in user list)
-                        /endIncognito - Turns your visibility 'on' again""";
+                                List of available commands:
+                                /ignore username - Adds user 'username' to list of your ignores
+                                /unignore username - Removes user 'username' from list of your ignores
+                                /listIgnores - Lists all your ignored users
+                                /incognito - Makes you incognito (not visible in user list)
+                                /endIncognito - Turns your visibility 'on' again""";
                         if (admin) {
                             message += """
-                            
-                            
-                            Admin only commands:
-                            /ban username - Bans user 'username' permanently
-                            /banIp ip - Bans specified ip permanently
-                            /banIpRange ip - Bans ips with the specified prefix, ie. 10.10.10.""";
+                                                                
+                                                                
+                                    Admin only commands:
+                                    /ban username - Bans user 'username' permanently
+                                    /banIp ip - Bans specified ip permanently
+                                    /banIpRange ip - Bans ips with the specified prefix, ie. 10.10.10.""";
                         }
 
                         _hallChat.sendToUser("System", from, message.replace("\n", "<br />"));
@@ -227,8 +219,6 @@ public class HallServer extends AbstractServer {
                         _hallChat.sendToUser("System", from, "\"" + parameters + "\" is not a recognized command.");
                     }
                 });
-
-
     }
 
     private void hallChanged() {
@@ -241,8 +231,7 @@ public class HallServer extends AbstractServer {
         _hallDataAccessLock.writeLock().lock();
         try {
             _tournamentService.reloadTournaments();
-        }
-        finally {
+        } finally {
             _hallDataAccessLock.writeLock().unlock();
         }
     }
@@ -257,8 +246,7 @@ public class HallServer extends AbstractServer {
                 _tournamentService.cancelAllTournamentQueues();
                 _chatServer.sendSystemMessageToAllChatRooms("@everyone System is entering shutdown mode and will be restarted when all games are finished.");
                 hallChanged();
-            }
-            else if(cancelMessage){
+            } else if (cancelMessage) {
                 _chatServer.sendSystemMessageToAllChatRooms("@everyone Shutdown mode canceled; games may now resume.");
             }
         } finally {
@@ -297,8 +285,6 @@ public class HallServer extends AbstractServer {
     private void cancelWaitingTables() {
         tableHolder.cancelWaitingTables();
     }
-
-
 
     /**
      * @return If table created, otherwise <code>false</code> (if the user already is sitting at a table or playing).
@@ -358,16 +344,16 @@ public class HallServer extends AbstractServer {
                 if (leagueSerie == null)
                     throw new HallException("There is no ongoing serie for that league");
 
-                if(isInviteOnly) {
+                if (isInviteOnly) {
                     throw new HallException("League games cannot be invite-only");
                 }
 
-                if(isPrivate) {
+                if (isPrivate) {
                     throw new HallException("League games cannot be private");
                 }
 
                 //Don't want people getting around the anonymity for leagues.
-                if(description != null)
+                if (description != null)
                     description = "";
 
                 format = leagueSerie.getFormat();
@@ -405,8 +391,7 @@ public class HallServer extends AbstractServer {
             hallChanged();
 
             return true;
-        }
-        finally {
+        } finally {
             _hallDataAccessLock.writeLock().unlock();
         }
     }
@@ -584,8 +569,7 @@ public class HallServer extends AbstractServer {
 
     private LotroDeck validateUserAndDeck(LotroFormat format, Player player, CollectionType collectionType, LotroDeck lotroDeck) throws HallException, DeckInvalidException {
         String validation = format.validateDeckForHall(lotroDeck);
-        if(validation == null || !validation.isEmpty())
-        {
+        if (validation == null || !validation.isEmpty()) {
             throw new DeckInvalidException(validation);
         }
 
@@ -599,7 +583,7 @@ public class HallServer extends AbstractServer {
                 filteredSpecialCardsDeck.setRing(filterCard(lotroDeck.getRing(), ownedCollection));
             filteredSpecialCardsDeck.setRingBearer(filterCard(lotroDeck.getRingBearer(), ownedCollection));
 
-            if(format.usesMaps() && lotroDeck.getMap() != null) {
+            if (format.usesMaps() && lotroDeck.getMap() != null) {
                 filteredSpecialCardsDeck.setMap(filterCard(lotroDeck.getMap(), ownedCollection));
             }
 
@@ -613,9 +597,9 @@ public class HallServer extends AbstractServer {
                 int owned = ownedCollection.getItemCount(blueprintId);
                 //Since the cards we are validating may be automatic errata IDs, we check and see
                 // if the base version of the errata ID is owned in foil, and count that if so.
-                if(blueprintId.endsWith("*")) {
+                if (blueprintId.endsWith("*")) {
                     var ids = format.findBaseCards(_library.getBaseBlueprintId(blueprintId));
-                    if(ids.size() == 1) {
+                    if (ids.size() == 1) {
                         owned += ownedCollection.getItemCount(ids.stream().findFirst() + "*");
                     }
                 }
@@ -629,10 +613,9 @@ public class HallServer extends AbstractServer {
                     String baseBlueprintId = _library.getBaseBlueprintId(blueprintId);
                     for (int i = 0; i < (count - fromOwned); i++) {
                         //hacking in foil support for errata foils
-                        if(set > 19 && blueprintId.endsWith("*")) {
+                        if (set > 19 && blueprintId.endsWith("*")) {
                             filteredSpecialCardsDeck.addCard(blueprintId);
-                        }
-                        else {
+                        } else {
                             filteredSpecialCardsDeck.addCard(baseBlueprintId);
                         }
                     }
@@ -654,12 +637,12 @@ public class HallServer extends AbstractServer {
 
                 int collectionCount = collection.getItemCount(cardCount.getKey());
 
-                if(!errataID.equals(overtID)) {
+                if (!errataID.equals(overtID)) {
                     collection.getItemCount(errataID);
                 }
 
                 var alts = _library.getAllAlternates(cardCount.getKey());
-                if(alts != null) {
+                if (alts != null) {
                     for (String id : alts) {
                         collectionCount += collection.getItemCount(id);
                     }
@@ -770,7 +753,7 @@ public class HallServer extends AbstractServer {
                 }
             }
 
-            if(forceRefresh) {
+            if (forceRefresh) {
                 _tournamentService.reloadTournaments();
             }
 
@@ -783,15 +766,13 @@ public class HallServer extends AbstractServer {
             }
             _tickCounter++;
 
-            if(changed) {
+            if (changed) {
                 hallChanged();
             }
 
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException("Error during server cleanup.", ex);
-        }
-        finally {
+        } finally {
             _hallDataAccessLock.writeLock().unlock();
         }
     }
@@ -812,7 +793,7 @@ public class HallServer extends AbstractServer {
             tournamentGameSettings = new GameSettings(null, _formatLibrary.getFormat(_tournament.getFormat()),
                     null, null, true, true, false, false, GameTimer.TOURNAMENT_TIMER, null);
 
-            wcGameSettings  = new GameSettings(null, _formatLibrary.getFormat(_tournament.getFormat()),
+            wcGameSettings = new GameSettings(null, _formatLibrary.getFormat(_tournament.getFormat()),
                     null, null, true, true, false, false, GameTimer.CHAMPIONSHIP_TIMER, null);
         }
 
@@ -829,7 +810,7 @@ public class HallServer extends AbstractServer {
             try {
                 if (!_shutdown) {
                     var settings = tournamentGameSettings;
-                    if(_tournament.getTournamentId().toLowerCase().contains("wc")) {
+                    if (_tournament.getTournamentId().toLowerCase().contains("wc")) {
                         settings = wcGameSettings;
                     }
                     final GameTable gameTable = tableHolder.setupTournamentTable(settings, participants);
@@ -865,16 +846,16 @@ public class HallServer extends AbstractServer {
         }
     }
 
-    public ManualGameSpawner GetManualGameSpawner(Tournament tournament, LotroFormat format,  GameTimer timer,  String description) {
-        return new ManualGameSpawner(tournament, format, timer, description);
+    public ManualGameSpawner createManualGameSpawner(String tournamentName, LotroFormat format, GameTimer timer, String description) {
+        return new ManualGameSpawner(tournamentName, format, timer, description);
     }
 
     public class ManualGameSpawner implements TournamentCallback {
-        private final Tournament _tournament;
+        private final String _tournamentName;
         private final GameSettings _settings;
 
-        private ManualGameSpawner(Tournament tournament, LotroFormat format,  GameTimer timer,  String description) {
-            _tournament = tournament;
+        private ManualGameSpawner(String tournamentName, LotroFormat format, GameTimer timer, String description) {
+            _tournamentName = tournamentName;
             _settings = new GameSettings(null, format,
                     null, null, true, false, false, false, timer, description);
         }
@@ -893,7 +874,7 @@ public class HallServer extends AbstractServer {
                 if (!_shutdown) {
                     final GameTable gameTable = tableHolder.setupTournamentTable(_settings, participants);
                     final LotroGameMediator mediator = createGameMediator(participants,
-                            _notifyHallListeners, _tournament.getTournamentName(), _settings);
+                            _notifyHallListeners, _tournamentName, _settings);
                     gameTable.startGame(mediator);
                 }
             } finally {
