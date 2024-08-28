@@ -18,9 +18,6 @@ public interface Tournament {
     public enum Stage {
         DRAFT("Drafting"),
         DECK_BUILDING("Deck building"),
-        AWAITING_KICKOFF("Awaiting kickoff"),
-        PAUSED("Paused"),
-        PREPARING("Preparing"),
         PLAYING_GAMES("Playing games"),
         FINISHED("Finished");
 

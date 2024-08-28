@@ -71,7 +71,7 @@ public class RecurringScheduledQueue extends AbstractTournamentQueue implements 
                     _tournamentService.addPlayer(tournamentId, player, _playerDecks.get(player));
 
                 var info = new TournamentInfo(tournamentId, null, tournamentName, _format, ZonedDateTime.now(),
-                        _collectionType, Tournament.Stage.PLAYING_GAMES, 0, false,
+                        _collectionType, Tournament.Stage.PLAYING_GAMES, 0,
                         _pairingMechanism, _tournamentPrizes);
 
                 var tournament = _tournamentService.addTournament(info);

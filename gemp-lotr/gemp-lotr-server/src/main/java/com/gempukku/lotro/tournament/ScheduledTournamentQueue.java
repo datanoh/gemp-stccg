@@ -35,12 +35,7 @@ public class ScheduledTournamentQueue extends AbstractTournamentQueue implements
         _startCondition = "at " + _startTime.format(DateUtils.DateTimeFormat);
         _minimumPlayers = info.minimum_players;
 
-        if(info.manual_kickoff) {
-            _stage = Tournament.Stage.AWAITING_KICKOFF;
-        }
-        else {
-            _stage = Tournament.Stage.PLAYING_GAMES;
-        }
+        _stage = Tournament.Stage.PLAYING_GAMES;
     }
 
     @Override
@@ -63,12 +58,11 @@ public class ScheduledTournamentQueue extends AbstractTournamentQueue implements
         var now = ZonedDateTime.now();
         if (now.isAfter(_startTime)) {
             if (_players.size() >= _minimumPlayers) {
-
                 for (String player : _players)
                     _tournamentService.addPlayer(_scheduledTournamentId, player, _playerDecks.get(player));
 
                 var info = new TournamentInfo(_scheduledTournamentId, null, _tournamentName, _format, ZonedDateTime.now(),
-                        _collectionType, _stage, 0, false,
+                        _collectionType, _stage, 0,
                         _pairingMechanism, _tournamentPrizes);
 
                 var tournament = _tournamentService.addTournament(info);
@@ -87,7 +81,7 @@ public class ScheduledTournamentQueue extends AbstractTournamentQueue implements
     @Override
     public boolean isJoinable() {
         var window = _signupTimeBeforeStart;
-        if(_scheduledTournamentId.toLowerCase().contains("wc")) {
+        if (_scheduledTournamentId.toLowerCase().contains("wc")) {
             window = _wcSignupTimeBeforeStart;
         }
         return ZonedDateTime.now().isAfter(_startTime.minus(window));

@@ -747,7 +747,6 @@ public class HallServer extends AbstractServer {
     private int _tickCounter = 60;
 
     public void cleanup(boolean forceRefresh) throws SQLException, IOException {
-
         _hallDataAccessLock.writeLock().lock();
         try {
             // Remove finished games
@@ -869,6 +868,7 @@ public class HallServer extends AbstractServer {
     public ManualGameSpawner GetManualGameSpawner(Tournament tournament, LotroFormat format,  GameTimer timer,  String description) {
         return new ManualGameSpawner(tournament, format, timer, description);
     }
+
     public class ManualGameSpawner implements TournamentCallback {
         private final Tournament _tournament;
         private final GameSettings _settings;
@@ -891,7 +891,6 @@ public class HallServer extends AbstractServer {
             _hallDataAccessLock.writeLock().lock();
             try {
                 if (!_shutdown) {
-
                     final GameTable gameTable = tableHolder.setupTournamentTable(_settings, participants);
                     final LotroGameMediator mediator = createGameMediator(participants,
                             _notifyHallListeners, _tournament.getTournamentName(), _settings);
