@@ -308,7 +308,7 @@ public class DefaultTournament implements Tournament {
                     }
                 }
                 if (_tournamentStage == Stage.DECK_BUILDING) {
-                    if (_deckBuildStartTime + DeckBuildTime > System.currentTimeMillis()
+                    if (_deckBuildStartTime + DeckBuildTime < System.currentTimeMillis()
                             || _playerDecks.size() == _players.size()) {
                         _tournamentStage = Stage.PLAYING_GAMES;
                         _tournamentService.updateTournamentStage(_tournamentId, _tournamentStage);
