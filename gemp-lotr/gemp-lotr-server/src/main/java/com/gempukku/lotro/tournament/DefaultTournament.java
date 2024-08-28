@@ -297,8 +297,7 @@ public class DefaultTournament implements Tournament {
             List<TournamentProcessAction> result = new LinkedList<>();
             if (_nextTask == null) {
                 if (_tournamentStage == Stage.DRAFT) {
-                    // Temporary - don't want to involve draft in this
-                    _draft.advanceDraft(null);
+                    _draft.advanceDraft();
                     if (_draft.isFinished()) {
                         result.add(new BroadcastAction("Drafting in tournament " + _tournamentName + " is finished, starting deck building"));
                         _tournamentStage = Stage.DECK_BUILDING;
