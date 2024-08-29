@@ -783,17 +783,19 @@ public class HallServer extends AbstractServer {
     }
 
     public class HallTournamentCallback implements TournamentCallback {
-        private final Tournament _tournament;
+        private final String tournamentId;
+        private final String tournamentName;
         private final GameSettings tournamentGameSettings;
 
         private final GameSettings wcGameSettings;
 
         private HallTournamentCallback(Tournament tournament) {
-            _tournament = tournament;
-            tournamentGameSettings = new GameSettings(null, _formatLibrary.getFormat(_tournament.getFormat()),
+            tournamentId = tournament.getTournamentId();
+            tournamentName = tournament.getTournamentName();
+            tournamentGameSettings = new GameSettings(null, _formatLibrary.getFormat(tournament.getFormat()),
                     null, null, true, true, false, false, GameTimer.TOURNAMENT_TIMER, null);
 
-            wcGameSettings = new GameSettings(null, _formatLibrary.getFormat(_tournament.getFormat()),
+            wcGameSettings = new GameSettings(null, _formatLibrary.getFormat(tournament.getFormat()),
                     null, null, true, true, false, false, GameTimer.CHAMPIONSHIP_TIMER, null);
         }
 
@@ -810,7 +812,7 @@ public class HallServer extends AbstractServer {
             try {
                 if (!_shutdown) {
                     var settings = tournamentGameSettings;
-                    if (_tournament.getTournamentId().toLowerCase().contains("wc")) {
+                    if (tournamentId.toLowerCase().contains("wc")) {
                         settings = wcGameSettings;
                     }
                     final GameTable gameTable = tableHolder.setupTournamentTable(settings, participants);
@@ -818,14 +820,14 @@ public class HallServer extends AbstractServer {
                             new GameResultListener() {
                                 @Override
                                 public void gameFinished(String winnerPlayerId, String winReason, Map<String, String> loserPlayerIdsWithReasons) {
-                                    _tournament.reportGameFinished(winnerPlayerId, loserPlayerIdsWithReasons.keySet().iterator().next());
+                                    _tournamentService.getTournamentById(tournamentId).reportGameFinished(winnerPlayerId, loserPlayerIdsWithReasons.keySet().iterator().next());
                                 }
 
                                 @Override
                                 public void gameCancelled() {
                                     createGameInternal(participants);
                                 }
-                            }, _tournament.getTournamentName(), settings);
+                            }, tournamentName, settings);
                     gameTable.startGame(mediator);
                 }
             } finally {
