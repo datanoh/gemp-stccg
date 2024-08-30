@@ -10,7 +10,7 @@ WHERE id IN (17)
 
 INSERT INTO gemp_db.scheduled_tournament
 (tournament_id, name, format, start_date, cost, playoff, tiebreaker, prizes, minimum_players, manual_kickoff, started)
-VALUES('2024-wc-champ-pc-fotr', '2024 PC-FOTR Championship', 'pc_fotr_block', '2024-08-18 00:04:00', 0, 'swiss', 'owr', 'daily', 2, true, false);
+VALUES('2024-wc-champ-pc-expanded', '2024 PC-Expanded Championship', 'pc_expanded', '2024-08-24 17:00:00', 0, 'swiss', 'owr', 'daily', 2, true, false);
 VALUES('2023-wc-group-stage-pc-movie', '2023 WC PC-Movie Group Stage', 'pc_movie', '2023-10-14 17:00:00', 0, 'swiss', 'owr', 'daily', 2, true, false);
 
 DELETE 
@@ -56,17 +56,46 @@ ORDER BY ID DESC;
 
 
 SELECT *
+FROM league l 
+WHERE code = 1723768400434
+
+
+SELECT *
+FROM league_participation lp 
+INNER JOIN league l
+	ON l.code = lp.league_type 
+WHERE player_name = 'fnlgroove'
+ORDER BY lp.id DESC
+
+
+SELECT *
 FROM game_history gh 
-WHERE tournament = 'Sealed Team Gala – Reflections Multipath - Serie 1'
+WHERE tournament = '2024 Decipher Movie Championship'
+	-- AND (winner = 'GeriGeli' OR loser = 'GeriGeli')
 ORDER BY id DESC;
 
-DELETE
-FROM league_match
-WHERE id IN (219953)
+SELECT *
+FROM game_history gh 
+WHERE win_recording_id = '3b355remokn628wz'
+ORDER BY id DESC;
+
+-- DELETE
+-- FROM league_match
+-- WHERE id IN (220214, 220213)
+
+SELECT *
+FROM league_match lm
+ORDER BY id DESC
+
+SELECT *
+FROM player p
+WHERE name IN ('sandro96', 'sempolPL', 'basmelis', 'liboras', 'dstaley', 'Joebers', 'MaChal', 'Chadwick537', 'WeakSauce', 'balrog69', 'Kainbr')
 
 INSERT INTO gemp_db.league_match
 (league_type, season_type, winner, loser)
 VALUES
+('1723768400434', 'Serie 1', 'Everett', 'doly96'),
+('1723768400434', 'Serie 1', 'doly96', 'Everett'),
 ('1723768400434', 'Serie 1', 'Dbix', 'Cwianacus'),
 ('1723768400434', 'Serie 1', 'Cwianacus', 'Dbix'),
 ('1723768400434', 'Serie 1', 'bign19', 'cmndante89'),
@@ -117,16 +146,54 @@ WHERE id = 728
 
 SELECT *
 FROM game_history gh 
+-- WHERE format_name = 'Movie Block (PC)'
+-- WHERE 	
+-- 	win_recording_id IN ('u11taxzjzjwpsn3n', 'yp820x67i18y9k3w', 'a6qxc3mlj1l3g028', 'e59555pgksduaoqi')
 ORDER BY id DESC
 
+
+UPDATE game_history 
+SET tournament = '2024 PC-Movie Championship'
+WHERE win_recording_id IN ('u11taxzjzjwpsn3n', 'yp820x67i18y9k3w', 'a6qxc3mlj1l3g028', 'e59555pgksduaoqi')
+
+
+INSERT INTO gemp_db.tournament_match
+(tournament_id, round, player_one, player_two, winner)
+VALUES('2024-wc-champ-decipher-movie', 1, 'GeriGeli', 'bye', NULL);
 
 SELECT *
 FROM tournament_match tm 
 ORDER BY id DESC
 
-DELETE 
-FROM tournament_match
-WHERE id >= 14351
+
+
+UPDATE tournament_match
+SET winner = 'Foehammer80'
+WHERE id = 14905
+
+INSERT INTO gemp_db.tournament_match
+(tournament_id, round, player_one, player_two, winner)
+VALUES
+('2024-wc-champ-pc-movie', 2, 'Axter', 'Rutil', 'Axter'),
+('2024-wc-champ-pc-movie', 2, 'Mock', 'paunovic-', 'Mock'),
+('2024-wc-champ-pc-movie', 2, 'bign19', 'CrisSilva', 'bign19'),
+('2024-wc-champ-pc-movie', 2, 'MaChal', 'GeriGeli', 'GeriGeli'),
+('2024-wc-champ-pc-movie', 2, 'talial', 'neergreve', 'neergreve'),
+('2024-wc-champ-pc-movie', 2, 'kylejwx93', 'bye', NULL),
+('2024-wc-champ-pc-movie', 3, 'Axter', 'Mock', 'Axter'),
+('2024-wc-champ-pc-movie', 3, 'bign19', 'bye', NULL),
+('2024-wc-champ-pc-movie', 3, 'CrisSilva', 'kylejwx93', 'CrisSilva'),
+('2024-wc-champ-pc-movie', 3, 'neergreve', 'GeriGeli', 'GeriGeli'),
+('2024-wc-champ-pc-movie', 3, 'MaChal', 'talial', 'MaChal'),
+('2024-wc-champ-pc-movie', 4, 'bign19', 'Axter', 'Axter'),
+('2024-wc-champ-pc-movie', 4, 'GeriGeli', 'Mock', 'Mock'),
+('2024-wc-champ-pc-movie', 4, 'CrisSilva', 'talial', 'talial'),
+('2024-wc-champ-pc-movie', 4, 'neergreve', 'kylejwx93', 'kylejwx93'),
+
+-- 
+-- DELETE 
+-- FROM tournament_match
+-- WHERE id >= 14908
 
 
 SELECT 
@@ -144,6 +211,11 @@ WHERE tournament = '2024 PC-FOTR Championship'
 	#AND (winner = 'Chadwick537' OR loser = 'Chadwick537')
 
 
+SELECT *
+FROM game_history gh 
+WHERE gh.tournament = '2024 PC-Expanded Championship'
+ORDER BY id DESC
+
 
 SELECT *
 FROM scheduled_tournament
@@ -152,12 +224,13 @@ ORDER BY ID DESC
 
 SELECT *
 FROM tournament t 
+WHERE tournament_id = '2024-wc-champ-pc-expanded'
 ORDER BY id DESC
 
 
 UPDATE tournament 
-SET stage = 'Playing games'
-WHERE id = 1387
+SET stage = 'Playing Games'
+WHERE id = 1435
 
 UPDATE tournament 
 SET round = '4'
@@ -171,11 +244,12 @@ WHERE id IN (1411, 1412, 1413, 1414, 1415)
 
 SELECT *
 FROM tournament_player tp 
+WHERE tournament_id = '2024-wc-champ-pc-expanded'
 ORDER BY ID DESC
 
-DELETE
-FROM tournament_match
-WHERE id IN (14315)
+-- DELETE
+-- FROM tournament_match
+-- WHERE id IN (14315)
 
 UPDATE tournament_player 
 SET dropped = 1
@@ -183,6 +257,7 @@ WHERE id = 11304
 
 SELECT *
 FROM tournament_match tm 
+WHERE tournament_id = '2024-wc-champ-pc-expanded'
 ORDER BY id DESC
 
 
@@ -190,12 +265,12 @@ SELECT *
 FROM deck d
 INNER JOIN player p
 	ON p.id = d.player_id 
-WHERE p.name = 'CrisSilva'
+WHERE p.name = 'valentint'
 
 
 INSERT INTO gemp_db.tournament_player
 (tournament_id, player, deck_name, deck, dropped)
-VALUES('2023-wc-group-stage-pc-fotr', 'Raelag', 'Nine Walkers / Uruk', '2_102*|1_1|1_324,1_331,1_341,2_119,1_349,1_352,1_354,3_117,1_361|1_13,1_50,2_122*,1_89*,1_97*,1_302,1_307,2_114,1_27,3_10,1_34*,51_40,51_40,51_40,51_45,51_45,1_56,1_57,1_286,1_127,3_66,53_68,53_68,53_68,1_143,1_143,1_143,2_46,2_46,1_148,1_148,1_148,3_75,3_75,3_75,1_156,1_156,1_156,1_156,2_93,51_313,51_313,1_318,2_105,1_44*,1_44*,2_20,2_20,1_296,1_296,1_296,1_298,1_298,1_298,1_298,2_39,1_121*,1_121*,1_136,51_139,51_139,51_139,51_139,52_108,1_133,1_133,1_133,1_133,1_127,1_148', '0');
+VALUES('2024-wc-champ-decipher-movie', 'Robert1712', 'Rohan 2023', '4_301|4_1|7_330,7_337,8_118,7_345,7_348,8_120,7_359,7_360,8_117|1_50,1_50,1_89,6_95,4_267,10_72,7_321,7_321,7_321,1_311,7_222,7_239,10_21,5_25,10_23,10_23,10_23,4_219,4_219,9_48,9_48,9_48,1_231,1_231,8_30,8_30,4_263,4_268,4_274,7_242,7_242,4_288,5_88,5_88,5_89,5_89,7_253,7_230,5_116,7_53,7_53,7_53,7_53,5_30,5_30,5_30,4_289,4_289,4_289,4_289,5_22,5_22,5_22,7_57,10_20,10_20,8_22,8_22,8_24,8_24,8_24,9_29,9_29,6_46,6_46,6_46,10_24,5_80,5_80,4_276,5_94,5_94,5_94,5_94,6_97,10_116', '0');
 
 UPDATE gemp_db.tournament_player
 SET deck_name= '(MOVIE-PC) FrodoDw- Gollum', deck='2_102|7_2|7_336,7_339,8_118,10_119,7_349,8_120,7_359,7_360,7_329|9_28,10_21,5_25,10_23,10_23,10_23,10_23,9_48,9_48,1_231,1_231,8_30,8_30,8_30,10_19,7_53,7_53,7_53,7_53,7_74,5_30,5_30,5_22,7_57,7_57,7_57,10_20,8_22,8_22,8_24,8_24,8_24,8_24,10_22,10_22,6_46,6_46,6_46,6_46,10_24,10_24,10_116,53_108,1_296,52_108,2_105,1_308,1_317,1_89,1_3,1_3,1_3,1_3,8_3,9_3,9_3,9_3,9_3,51_9,51_9,51_9,1_8,2_5,2_5,1_15,8_5,10_1,2_10,2_10,2_10,1_21,9_6,9_7,9_8,1_27,2_10,51_9,2_5,8_3,2_4,2_4,9_5|100_4'
