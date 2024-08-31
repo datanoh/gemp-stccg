@@ -754,7 +754,7 @@ table.tables tr.privateForPlayer {
 	gap: 0.4em;
 }
 
-.serieData {
+.serieData, .elim-table-entry {
 	border-style: solid; 
 	padding: 1em; 
 	margin: 0.5em; 

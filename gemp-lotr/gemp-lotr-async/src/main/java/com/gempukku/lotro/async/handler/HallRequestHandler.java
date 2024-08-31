@@ -150,7 +150,7 @@ public class HallRequestHandler extends LotroServerRequestHandler implements Uri
             Player resourceOwner = getResourceOwnerSafely(request, participantId);
 
             if(isInviteOnly) {
-                if(desc.length()==0) {
+                if(desc.isEmpty()) {
                     responseWriter.writeXmlResponse(marshalException(new HallException("Invite-only games must have your intended opponent in the description")));
                     return;
                 }

@@ -1033,6 +1033,49 @@ var GempLotrCommunication = Class.extend({
         });
     },
     
+    
+    processScheduledTournament:function (preview, name, wc, tournamentId, formatCode, 
+                                         start, cost, playoff, tiebreaker, prizeStructure, minPlayers, manualKickoff,
+                                       callback, errorMap) {
+        $.ajax({
+            type:"POST",
+            url:this.url + "/admin/processScheduledTournament",
+            cache:false,
+            data:{
+                preview:preview,
+                name:name,
+                wc:wc,
+                tournamentId:tournamentId,
+                formatCode:formatCode,
+                start:start,
+                cost:cost,
+                playoff:playoff,
+                tiebreaker:tiebreaker,
+                prizeStructure:prizeStructure,
+                minPlayers:minPlayers,
+                manualKickoff:manualKickoff
+            },
+            success:this.deliveryCheck(callback),
+            error:this.errorCheck(errorMap),
+            dataType:"json"
+        });
+    },
+    
+    setTournamentStage:function(tournamentId, stage, callback, errorMap) {
+        $.ajax({
+            type:"POST",
+            url:this.url + "/admin/setTournamentStage",
+            cache:false,
+            data:{
+                tournamentId:tournamentId,
+                stage:stage
+            },
+            success:this.deliveryCheck(callback),
+            error:this.errorCheck(errorMap),
+            dataType:"html"
+        });
+    },
+    
     addLeaguePlayers:function(code, players, callback, errorMap) {
         $.ajax({
             type:"POST",

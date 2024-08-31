@@ -62,6 +62,43 @@ public class DbTournamentDAO implements TournamentDAO {
     }
 
     @Override
+    public void addScheduledTournament(DBDefs.ScheduledTournament dbinfo) {
+        try {
+            var db = _dbAccess.openDB();
+
+            String sql = """
+                        INSERT INTO gemp_db.scheduled_tournament (tournament_id, name, format, 
+                            start_date, cost, playoff, tiebreaker, prizes, minimum_players, manual_kickoff, started)
+                        VALUES(:tid, :name, :format, 
+                            :start, :cost, :playoff, :tiebreaker, :prizes, :minimum_players, :manual_kickoff, :started);
+                        """;
+
+            try (org.sql2o.Connection conn = db.beginTransaction()) {
+                Query query = conn.createQuery(sql, true);
+                query.addParameter("tid", dbinfo.tournament_id)
+                        .addParameter("name", dbinfo.name)
+                        .addParameter("format", dbinfo.format)
+                        .addParameter("start", dbinfo.start_date)
+                        .addParameter("cost", dbinfo.cost)
+                        .addParameter("playoff", dbinfo.playoff)
+                        .addParameter("tiebreaker", dbinfo.tiebreaker)
+                        .addParameter("prizes", dbinfo.prizes)
+                        .addParameter("minimum_players", dbinfo.minimum_players)
+                        .addParameter("manual_kickoff", dbinfo.manual_kickoff)
+                        .addParameter("started", dbinfo.started);
+
+                int id = query.executeUpdate()
+                        .getKey(Integer.class);
+                conn.commit();
+
+                return;
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Unable to insert scheduled tournament", ex);
+        }
+    }
+
+    @Override
     public DBDefs.Tournament getTournamentById(String tournamentId) {
 
         try {
@@ -107,6 +144,30 @@ public class DbTournamentDAO implements TournamentDAO {
             }
         } catch (Exception ex) {
             throw new RuntimeException("Unable to retrieve unfinished tournaments", ex);
+        }
+    }
+
+    @Override
+    public DBDefs.Tournament getTournament(String tournamentId) {
+        try {
+            var db = _dbAccess.openDB();
+
+            try (org.sql2o.Connection conn = db.open()) {
+                String sql = """
+                        SELECT 
+                            tournament_id, start_date, draft_type, name, format, 
+                            collection, stage, pairing, round, manual_kickoff, prizes 
+                        FROM tournament 
+                        WHERE tournament_id = :tid;
+                        """;
+                List<DBDefs.Tournament> results = conn.createQuery(sql)
+                        .addParameter("tid", tournamentId)
+                        .executeAndFetch(DBDefs.Tournament.class);
+
+                return results.getFirst();
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException("Unable to retrieve tournament '" + tournamentId + "'", ex);
         }
     }
 

@@ -16,7 +16,9 @@ public interface ResponseWriter {
 
     void writeByteResponse(byte[] bytes, Map<? extends CharSequence, String> headers);
 
+    void sendOK();
     void sendXmlOK();
+    void sendJsonOK();
     void writeXmlResponse(Document document);
 
     void writeXmlResponse(Document document, Map<? extends CharSequence, String> addHeaders);

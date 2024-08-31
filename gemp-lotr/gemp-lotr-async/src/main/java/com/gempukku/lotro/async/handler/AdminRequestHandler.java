@@ -5,6 +5,7 @@ import com.gempukku.lotro.async.ResponseWriter;
 import com.gempukku.lotro.cache.CacheManager;
 import com.gempukku.lotro.chat.ChatServer;
 import com.gempukku.lotro.collection.CollectionsManager;
+import com.gempukku.lotro.common.DBDefs;
 import com.gempukku.lotro.common.DateUtils;
 import com.gempukku.lotro.db.LeagueDAO;
 import com.gempukku.lotro.db.PlayerDAO;
@@ -22,7 +23,9 @@ import com.gempukku.lotro.logic.GameUtils;
 import com.gempukku.lotro.logic.vo.LotroDeck;
 import com.gempukku.lotro.packs.ProductLibrary;
 import com.gempukku.lotro.service.AdminService;
+import com.gempukku.lotro.tournament.Tournament;
 import com.gempukku.lotro.tournament.TournamentService;
+import com.gempukku.util.JsonUtils;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
@@ -37,6 +40,9 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -94,6 +100,10 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
             processConstructedLeague(request, responseWriter, true);
         } else if (uri.equals("/addConstructedLeague") && request.method() == HttpMethod.POST) {
             processConstructedLeague(request, responseWriter, false);
+        } else if (uri.equals("/processScheduledTournament") && request.method() == HttpMethod.POST) {
+            processScheduledTournament(request, responseWriter);
+        } else if (uri.equals("/setTournamentStage") && request.method() == HttpMethod.POST) {
+            setTournamentStage(request, responseWriter);
         } else if (uri.equals("/addTables") && request.method() == HttpMethod.POST) {
             addTables(request, responseWriter);
         } else if (uri.equals("/previewSoloDraftLeague") && request.method() == HttpMethod.POST) {
@@ -123,8 +133,27 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
         }
     }
 
+    private void setTournamentStage(HttpRequest request, ResponseWriter responseWriter) throws Exception {
+        validateEventAdmin(request);
+        var postDecoder = new HttpPostRequestDecoder(request);
+
+        String tournamentId = getFormParameterSafely(postDecoder, "tournamentId");
+        String stageStr = getFormParameterSafely(postDecoder, "stage");
+
+        Throw400IfStringNull("tournamentId", tournamentId);
+        Throw400IfStringNull("stage", stageStr);
+
+        var stage = Tournament.Stage.parseStage(stageStr);
+        Throw400IfValidationFails("stage", stageStr, stage != null);
+
+        _tournamentService.recordTournamentStage(tournamentId, stage);
+
+        clearCacheInternal();
+        responseWriter.sendOK();
+    }
+
     private void addPlayersToLeague(HttpRequest request, ResponseWriter responseWriter, String remoteIp) throws Exception {
-        validateLeagueAdmin(request);
+        validateEventAdmin(request);
 
         HttpPostRequestDecoder postDecoder = new HttpPostRequestDecoder(request);
 
@@ -148,7 +177,7 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
             }
         }
 
-        responseWriter.writeHtmlResponse("OK");
+        responseWriter.sendOK();
     }
 
     private void findMultipleAccounts(HttpRequest request, ResponseWriter responseWriter) throws Exception {
@@ -356,7 +385,7 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
     }
 
     private void addTables(HttpRequest request, ResponseWriter responseWriter) throws Exception {
-        validateLeagueAdmin(request);
+        validateEventAdmin(request);
 
         HttpPostRequestDecoder postDecoder = new HttpPostRequestDecoder(request);
         try {
@@ -390,7 +419,7 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
                 if(player == null)
                     throw new HttpProcessingException(400, "Player '" + playerName + "' does not exist.");
 
-                var deck = _tournamentService.getPlayerDeck(tournament.getTournamentId(), player.getName(), format.getName());
+                var deck = _tournamentService.retrievePlayerDeck(tournament.getTournamentId(), player.getName(), format.getName());
                 if(deck == null)
                     throw new HttpProcessingException(400, "Player '" + playerName + "' has no deck registered for '" + tournamentID + "'.");
 
@@ -400,7 +429,7 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
                 decks.put(player.getName(), deck);
             }
 
-            var spawner = _hallServer.createManualGameSpawner(tournament.getTournamentName(), format, timer, name);
+            var spawner = _hallServer.createManualGameSpawner(tournament, format, timer, name);
             for(int i = 0; i < playerones.size(); i++) {
                 String p1 = playerones.get(i);
                 String p2 = playertwos.get(i);
@@ -424,7 +453,7 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
      * @throws Exception
      */
     private void processConstructedLeague(HttpRequest request, ResponseWriter responseWriter, boolean preview) throws Exception {
-        validateLeagueAdmin(request);
+        validateEventAdmin(request);
 
         var postDecoder = new HttpPostRequestDecoder(request);
 
@@ -578,7 +607,7 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
      * @throws Exception
      */
     private void processSoloDraftLeague(HttpRequest request, ResponseWriter responseWriter, boolean preview) throws Exception {
-        validateLeagueAdmin(request);
+        validateEventAdmin(request);
 
         var postDecoder = new HttpPostRequestDecoder(request);
 
@@ -728,7 +757,7 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
      * @throws Exception
      */
     private void processSealedLeague(HttpRequest request, ResponseWriter responseWriter, boolean preview) throws Exception {
-        validateLeagueAdmin(request);
+        validateEventAdmin(request);
 
         var postDecoder = new HttpPostRequestDecoder(request);
 
@@ -867,6 +896,93 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
         responseWriter.writeXmlResponse(doc);
     }
 
+    /**
+     * Processes the passed parameters for a theoretical scheduled tournament.  Based on the preview parameter, this will
+     * either create the tournament for real, or just return the parsed values to the client so the admin can preview
+     * the input.
+     * @param request the request
+     * @param responseWriter the response writer
+     * @throws Exception
+     */
+    private void processScheduledTournament(HttpRequest request, ResponseWriter responseWriter) throws Exception {
+        validateEventAdmin(request);
+
+        var postDecoder = new HttpPostRequestDecoder(request);
+
+        String previewStr = getFormParameterSafely(postDecoder, "preview");
+        boolean preview = Throw400IfNullOrNonBoolean("preview", previewStr);
+
+        String name = getFormParameterSafely(postDecoder, "name");
+        String wcStr = getFormParameterSafely(postDecoder, "wc");
+        String tournamentId = getFormParameterSafely(postDecoder, "tournamentId");
+        String formatStr = getFormParameterSafely(postDecoder, "formatCode");
+        String startStr = getFormParameterSafely(postDecoder, "start");
+        String costStr = getFormParameterSafely(postDecoder, "cost");
+        String playoff = getFormParameterSafely(postDecoder, "playoff");
+        String tiebreaker = getFormParameterSafely(postDecoder, "tiebreaker");
+        String prizeStructure = getFormParameterSafely(postDecoder, "prizeStructure");
+        String minPlayersStr = getFormParameterSafely(postDecoder, "minPlayers");
+        String manualKickoffStr = getFormParameterSafely(postDecoder, "manualKickoff");
+
+        //String inviteOnlyStr = getFormParameterSafely(postDecoder, "inviteOnly");
+        //String topPrizeStr = getFormParameterSafely(postDecoder, "topPrize");
+        //String topCutoffStr = getFormParameterSafely(postDecoder, "topCutoff");
+        //String participationPrizeStr = getFormParameterSafely(postDecoder, "participationPrize");
+        //String participationGamesStr = getFormParameterSafely(postDecoder, "participationGames");
+
+        Throw400IfStringNull("name", name);
+        boolean wc = ParseBoolean("wc", wcStr, false);
+        Throw400IfStringNull("tournamentId", tournamentId);
+        Throw400IfStringNull("format", formatStr);
+        Throw400IfStringNull("start", startStr);
+
+        LocalDateTime start = null;
+        try {
+            start = DateUtils.ParseDate(startStr).toLocalDateTime();
+        }
+        catch(DateTimeParseException ex) {
+            Throw400IfValidationFails("start", startStr, false);
+        }
+
+        int cost = Throw400IfNullOrNonInteger("cost", costStr);
+        var format = _formatLibrary.getFormat(formatStr);
+        Throw400IfValidationFails("format", formatStr,format != null);
+        Throw400IfValidationFails("playoff", playoff,Tournament.getPairingMechanism(playoff) != null);
+        //Turns out prizes are busted at the moment and are always Daily.
+        //var prizes = Tournament.getTournamentPrizes(_productLibrary, prizeStructure);
+        int minPlayers = Throw400IfNullOrNonInteger("minPlayers", minPlayersStr);
+        boolean manualKickoff = ParseBoolean("manualKickoff", manualKickoffStr, false);
+
+        if(wc) {
+            tournamentId = DateUtils.Now().getYear() + "_wc_" + tournamentId;
+        }
+
+        var params = new DBDefs.ScheduledTournament();
+        params.name = name;
+        params.tournament_id = tournamentId;
+        params.format = formatStr;
+        params.start_date = start;
+        params.cost = cost;
+        params.playoff = playoff;
+        params.tiebreaker = "owr";
+        params.prizes = "daily";
+        params.minimum_players = minPlayers;
+        params.manual_kickoff = manualKickoff;
+        params.started = false;
+
+
+        if(!preview) {
+            _tournamentService.addScheduledTournament(params);
+            responseWriter.sendJsonOK();
+            return;
+        }
+
+        //We aren't creating the tournament for real, so instead we will return the tournament in JSON format for the
+        // admin panel preview.
+
+        responseWriter.writeJsonResponse(JsonUtils.Serialize(params));
+    }
+
     private void getMotd(HttpRequest request, ResponseWriter responseWriter) throws HttpProcessingException, IOException {
         validateAdmin(request);
 
@@ -935,17 +1051,17 @@ public class AdminRequestHandler extends LotroServerRequestHandler implements Ur
     private void clearCache(HttpRequest request, ResponseWriter responseWriter) throws HttpProcessingException, SQLException, IOException {
         validateAdmin(request);
 
-        _leagueService.clearCache();
-        _tournamentService.clearCache();
-
         int before = _cacheManager.getTotalCount();
-
-        _cacheManager.clearCaches();
-
+        clearCacheInternal();
         int after = _cacheManager.getTotalCount();
 
-        _hallServer.cleanup(true);
-
         responseWriter.writeHtmlResponse("Before: " + before + "<br><br>After: " + after);
+    }
+
+    private void clearCacheInternal() throws SQLException, IOException {
+        _leagueService.clearCache();
+        _tournamentService.clearCache();
+        _cacheManager.clearCaches();
+        _hallServer.cleanup(true);
     }
 }

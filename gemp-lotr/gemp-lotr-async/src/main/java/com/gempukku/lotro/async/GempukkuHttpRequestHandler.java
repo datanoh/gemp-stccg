@@ -248,8 +248,18 @@ public class GempukkuHttpRequestHandler extends SimpleChannelInboundHandler<Full
         }
 
         @Override
+        public void sendOK() {
+            writeHtmlResponse("OK");
+        }
+
+        @Override
         public void sendXmlOK() {
             writeXmlResponse(null, null);
+        }
+
+        @Override
+        public void sendJsonOK() {
+            writeJsonResponse("OK");
         }
 
         @Override

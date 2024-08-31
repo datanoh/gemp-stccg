@@ -41,7 +41,7 @@ public class ImmediateRecurringQueue extends AbstractTournamentQueue implements 
 
             for (int i=0; i<_playerCap; i++) {
                 String player = _players.poll();
-                _tournamentService.addPlayer(tournamentId, player, _playerDecks.get(player));
+                _tournamentService.recordTournamentPlayer(tournamentId, player, _playerDecks.get(player));
                 _playerDecks.remove(player);
             }
 

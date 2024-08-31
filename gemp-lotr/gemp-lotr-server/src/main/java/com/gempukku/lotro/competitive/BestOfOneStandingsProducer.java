@@ -71,6 +71,7 @@ public class BestOfOneStandingsProducer {
             }
 
             var standing = new PlayerStanding(playerName, points, gamesPlayed, playerWins, playerLosses, byeRound);
+            standing.opponentWinRate = score;
             standings.put(playerName, standing);
         }
 

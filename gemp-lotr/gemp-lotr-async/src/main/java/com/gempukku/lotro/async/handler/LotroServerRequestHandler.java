@@ -329,6 +329,53 @@ public class LotroServerRequestHandler {
     }
 
     /**
+     * This function is for validating incoming parameters on POST requests.  If the passed parameter fails to
+     * pass custom validation, then HTTP 400 (Bad Request) will be thrown to inform the user
+     * that they need to fix their call.
+     * @param paramName The name of the API parameter being evaluated.  This is purely used to attach a sensible
+     *                  error message to the error.
+     * @param value The value being validated.  Will be returned to the user for debugging purposes.
+     * @param validIf Whether the parameter value has passed validation (typically this is a simple inline check).
+     * @return For convenience, the converted boolean will be returned, meaning that higher-level functions can
+     *  validate and convert in a single function call.
+     * @throws HttpProcessingException This function throws HTTP 400 (Bad Request) if the value is not a valid boolean.
+     */
+    protected void Throw400IfValidationFails(String paramName, String value, boolean validIf, String errorMsg) throws HttpProcessingException {
+        if(value.isEmpty()) {
+            throw new HttpProcessingException(400, "Parameter '" + paramName + "' cannot be blank.");
+        }
+
+        if(validIf)
+            return;
+
+        if(errorMsg != null && !errorMsg.isEmpty())
+            throw new HttpProcessingException(400, "Parameter '" + paramName + "' value '" + value + "'failed validation: " + errorMsg);
+        else
+            throw new HttpProcessingException(400, "Parameter '" + paramName + "' value not recognized: '" + value + "'");
+    }
+
+    protected void Throw400IfValidationFails(String paramName, String value, boolean validIf) throws HttpProcessingException {
+        Throw400IfValidationFails(paramName, value, validIf, null);
+    }
+
+    /**
+     * This function is for validating incoming parameters on POST requests.  If the passed parameter is missing or is
+     * not a representation of a valid boolean variable, then it will default to the given value.
+     * @param paramName The name of the API parameter being evaluated.  This is ignored and is only kept for consistency
+     *                  with other similar APIs.
+     * @param value The value being validated.  Should be some representation of "true" or "false".
+     * @return For convenience, the converted boolean will be returned, meaning that higher-level functions can
+     *  validate and convert in a single function call.
+     */
+    protected boolean ParseBoolean(String paramName, String value, boolean Default) throws HttpProcessingException {
+        if(value.isBlank()) {
+            return Default;
+        }
+
+        return Boolean.parseBoolean(value.toLowerCase().trim());
+    }
+
+    /**
      * Verifies the request is from a full admin user and nothing less.
      * @param request the HTTP Request sent from communication.js
      * @throws HttpProcessingException This function throws HTTP 403 (Forbidden) if the user is not a full admin.
@@ -345,7 +392,7 @@ public class LotroServerRequestHandler {
      * @param request the HTTP Request sent from communication.js
      * @throws HttpProcessingException This function throws HTTP 403 (Forbidden) if the user is not a league admin.
      */
-    protected void validateLeagueAdmin(HttpRequest request) throws HttpProcessingException {
+    protected void validateEventAdmin(HttpRequest request) throws HttpProcessingException {
         Player player = getResourceOwnerSafely(request, null);
 
         if (!player.hasType(Player.Type.ADMIN) && !player.hasType(Player.Type.LEAGUE_ADMIN))

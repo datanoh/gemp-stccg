@@ -17,12 +17,14 @@ public class DateUtils {
     public static final DateTimeFormatter DateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public static final DateTimeFormatter IntDateFormat = DateTimeFormatter.ofPattern("yyyyMMdd");
     public static final DateTimeFormatter DateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter APIDateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
     public static String FormatDateTime(ZonedDateTime dateTime) { return dateTime.format(DateTimeFormat); }
     public static String FormatDate(ZonedDateTime date) { return date.format(DateFormat); }
     public static ZonedDateTime ParseDate(LocalDateTime time) { return ZonedDateTime.of(time, UTC); }
 
     public static ZonedDateTime ParseDate(LocalDate date) { return ZonedDateTime.of(date, LocalTime.MIDNIGHT,  UTC); }
     public static ZonedDateTime ParseDate(int time) { return LocalDate.parse(String.valueOf(time), IntDateFormat).atStartOfDay(ZoneOffset.UTC); }
+    public static ZonedDateTime ParseDate(String time) { return LocalDateTime.parse(time, APIDateTimeFormat).atZone(UTC); }
     public static ZonedDateTime MinDate() { return DateOf(2012, 1, 1); }
     public static ZonedDateTime Now() { return ZonedDateTime.now(UTC); }
     public static ZonedDateTime Today() { return Now().truncatedTo(ChronoUnit.DAYS); }

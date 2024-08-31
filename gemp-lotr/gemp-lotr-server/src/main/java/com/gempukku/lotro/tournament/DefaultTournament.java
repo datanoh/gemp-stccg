@@ -1,5 +1,6 @@
 package com.gempukku.lotro.tournament;
 
+import com.gempukku.lotro.common.DBDefs;
 import com.gempukku.lotro.common.DateUtils;
 import com.gempukku.lotro.collection.CollectionsManager;
 import com.gempukku.lotro.collection.DeckRenderer;
@@ -10,15 +11,19 @@ import com.gempukku.lotro.draft.DefaultDraft;
 import com.gempukku.lotro.draft.Draft;
 import com.gempukku.lotro.draft.DraftPack;
 import com.gempukku.lotro.game.*;
+import com.gempukku.lotro.hall.TableHolder;
 import com.gempukku.lotro.logic.vo.LotroDeck;
 import com.gempukku.lotro.packs.ProductLibrary;
 import com.gempukku.lotro.tournament.action.BroadcastAction;
 import com.gempukku.lotro.tournament.action.CreateGameAction;
 import com.gempukku.lotro.tournament.action.TournamentProcessAction;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -29,26 +34,28 @@ public class DefaultTournament implements Tournament {
     public static final int DeckBuildTime = 10 * 60 * 1000;
     public static long PairingDelayTime = 1000 * 60 * 1;
 
-    private final PairingMechanism _pairingMechanism;
-    private final TournamentPrizes _tournamentPrizes;
+    private PairingMechanism _pairingMechanism;
+    private TournamentPrizes _tournamentPrizes;
     private final String _tournamentId;
-    private final String _tournamentName;
-    private final String _format;
-    private final CollectionType _collectionType;
+    private String _tournamentName;
+    private String _format;
+    private CollectionType _collectionType;
     private Stage _tournamentStage;
     private int _tournamentRound;
 
-    private final Set<String> _players;
+    private final Set<String> _players = new HashSet<>();
     private String _playerList;
-    private final Map<String, LotroDeck> _playerDecks;
-    private final Set<String> _droppedPlayers;
-    //This used to be "byes per player", but is now "rounds with byes per player"
-    private final HashMap<String, Integer> _playerByes;
+    private final Map<String, LotroDeck> _playerDecks = new HashMap<>();
+    private final Set<String> _droppedPlayers  = new HashSet<>();
+    private final HashMap<String, Integer> _playerByes = new HashMap<>();
 
-    private final Set<String> _currentlyPlayingPlayers;
-    private final Set<TournamentMatch> _finishedTournamentMatches;
+    private final Set<String> _currentlyPlayingPlayers = new HashSet<>();
+    private final Set<TournamentMatch> _finishedTournamentMatches = new HashSet<>();
 
     private final TournamentService _tournamentService;
+    private final CollectionsManager _collectionsManager;
+    private final ProductLibrary _productLibrary;
+    private final TableHolder _tables;
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final Lock readLock = lock.readLock();
@@ -63,62 +70,90 @@ public class DefaultTournament implements Tournament {
 
     private String _tournamentReport;
 
-    public DefaultTournament(TournamentService tournamentService, String tournamentId,
-                             String tournamentName, String format, CollectionType collectionType,
-                             int tournamentRound, Stage tournamentStage,
-                             PairingMechanism pairingMechanism, TournamentPrizes tournamentPrizes,
-                             CollectionsManager collectionsManager, ProductLibrary productLibrary, DraftPack draftPack) {
+    public DefaultTournament(TournamentService tournamentService, CollectionsManager collectionsManager,
+                             ProductLibrary productLibrary, TableHolder tables, String tournamentId) {
         _tournamentService = tournamentService;
+        _collectionsManager = collectionsManager;
+        _productLibrary = productLibrary;
         _tournamentId = tournamentId;
-        _tournamentName = tournamentName;
-        _format = format;
-        _collectionType = collectionType;
-        _tournamentRound = tournamentRound;
-        _tournamentStage = tournamentStage;
-        _pairingMechanism = pairingMechanism;
-        _tournamentPrizes = tournamentPrizes;
+        _tables = tables;
 
-        _currentlyPlayingPlayers = new HashSet<>();
-
-        _players = new HashSet<>(_tournamentService.getPlayers(_tournamentId));
-        _playerDecks = new HashMap<>(_tournamentService.getPlayerDecks(_tournamentId, _format));
-        _droppedPlayers = new HashSet<>(_tournamentService.getDroppedPlayers(_tournamentId));
-        _playerByes = new HashMap<>(_tournamentService.getPlayerByes(_tournamentId));
-        _finishedTournamentMatches = new HashSet<>();
-
-        regeneratePlayerList();
-
-        if (_tournamentStage == Stage.PLAYING_GAMES) {
-            Map<String, String> matchesToCreate = new HashMap<>();
-            for (TournamentMatch tournamentMatch : _tournamentService.getMatches(_tournamentId)) {
-                if (tournamentMatch.isFinished())
-                    _finishedTournamentMatches.add(tournamentMatch);
-                else {
-                    _currentlyPlayingPlayers.add(tournamentMatch.getPlayerOne());
-                    _currentlyPlayingPlayers.add(tournamentMatch.getPlayerTwo());
-                    matchesToCreate.put(tournamentMatch.getPlayerOne(), tournamentMatch.getPlayerTwo());
-                }
-            }
-
-            if (!matchesToCreate.isEmpty())
-                _nextTask = new CreateMissingGames(matchesToCreate);
-        } else if (_tournamentStage == Stage.DRAFT) {
-            _draft = new DefaultDraft(collectionsManager, _collectionType, productLibrary, draftPack,
-                    _players);
-        } else if (_tournamentStage == Stage.DECK_BUILDING) {
-            _deckBuildStartTime = System.currentTimeMillis();
-        } else if (_tournamentStage == Stage.AWAITING_KICKOFF || _tournamentStage == Stage.PAUSED) {
-
-        } else if (_tournamentStage == Stage.FINISHED) {
-            _finishedTournamentMatches.addAll(_tournamentService.getMatches(_tournamentId));
-        }
+        RefreshTournamentInfo();
     }
 
-    public DefaultTournament(TournamentService tournamentService, CollectionsManager collectionsManager,
-                             ProductLibrary productLibrary, DraftPack draftPack, TournamentInfo info) {
-        this(tournamentService, info.tournamentId(), info.name(), info.format(), info.collectionType(),
-                info.round(), info.tournamentStage(), info.pairingMechanism(), info.prizesScheme(),
-                collectionsManager, productLibrary, draftPack);
+    public void RefreshTournamentInfo() {
+        var data = _tournamentService.retrieveTournamentData(_tournamentId);
+        if(data == null)
+            return;
+
+        writeLock.lock();
+        try {
+            _tournamentName = data.name;
+            _format = data.format;
+            _collectionType = CollectionType.parseCollectionCode(data.collection);
+            _tournamentRound = data.round;
+            _tournamentStage = Tournament.Stage.parseStage(data.stage);
+            _pairingMechanism = _tournamentService.getPairingMechanism(data.pairing);
+            _tournamentPrizes = Tournament.getTournamentPrizes(_productLibrary, data.prizes);
+
+            _players.clear();
+            _players.addAll(_tournamentService.retrieveTournamentPlayers(_tournamentId));
+
+            _droppedPlayers.clear();
+            _droppedPlayers.addAll(_tournamentService.retrieveAbandonedPlayers(_tournamentId));
+
+            _playerDecks.clear();
+            _playerDecks.putAll(_tournamentService.retrievePlayerDecks(_tournamentId, _format));
+
+            _playerByes.clear();
+            _playerByes.putAll(_tournamentService.retrieveTournamentByes(_tournamentId));
+
+            _finishedTournamentMatches.clear();
+
+            regeneratePlayerList();
+
+            _currentlyPlayingPlayers.clear();
+
+            if (_tournamentStage == Stage.PLAYING_GAMES) {
+                var matchesToCreate = new HashMap<String, String>();
+                var existingTables = _tables.getTournamentTables(_tournamentId);
+                for (TournamentMatch tournamentMatch : _tournamentService.retrieveMatchups(_tournamentId)) {
+                    if (tournamentMatch.isFinished())
+                        _finishedTournamentMatches.add(tournamentMatch);
+                    else {
+                        _currentlyPlayingPlayers.add(tournamentMatch.getPlayerOne());
+                        _currentlyPlayingPlayers.add(tournamentMatch.getPlayerTwo());
+
+                        if(existingTables.stream().anyMatch(x -> x.hasPlayer(tournamentMatch.getPlayerOne()) &&
+                                x.hasPlayer(tournamentMatch.getPlayerTwo())))
+                        {
+                            continue;
+                        }
+
+                        matchesToCreate.put(tournamentMatch.getPlayerOne(), tournamentMatch.getPlayerTwo());
+                    }
+                }
+
+                if (!matchesToCreate.isEmpty())
+                    _nextTask = new CreateMissingGames(matchesToCreate);
+            }
+            //TODO: move this and other draft-specific handling into its own DraftTournament
+//            else if (_tournamentStage == Stage.DRAFT) {
+//                _draft = new DefaultDraft(collectionsManager, _collectionType, productLibrary, draftPack,
+//                        _players);
+//            }
+//            else if (_tournamentStage == Stage.DECK_BUILDING) {
+//                _deckBuildStartTime = System.currentTimeMillis();
+//            }
+            else if (_tournamentStage == Stage.AWAITING_KICKOFF || _tournamentStage == Stage.PAUSED) {
+                // We await a moderator to manually progress the tournament stage
+            } else if (_tournamentStage == Stage.FINISHED) {
+                _finishedTournamentMatches.addAll(_tournamentService.retrieveMatchups(_tournamentId));
+            }
+
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     protected void regeneratePlayerList() {
@@ -212,15 +247,14 @@ public class DefaultTournament implements Tournament {
     public void reportGameFinished(String winner, String loser) {
         writeLock.lock();
         try {
-            if (_tournamentStage == Stage.PLAYING_GAMES && _currentlyPlayingPlayers.contains(winner)
-                    && _currentlyPlayingPlayers.contains(loser)) {
-                _tournamentService.setMatchResult(_tournamentId, _tournamentRound, winner);
+            if (_currentlyPlayingPlayers.contains(winner) && _currentlyPlayingPlayers.contains(loser)) {
+                _tournamentService.recordMatchupResult(_tournamentId, _tournamentRound, winner);
                 _currentlyPlayingPlayers.remove(winner);
                 _currentlyPlayingPlayers.remove(loser);
                 _finishedTournamentMatches.add(
                         new TournamentMatch(winner, loser, winner, _tournamentRound));
                 if (_pairingMechanism.shouldDropLoser()) {
-                    _tournamentService.dropPlayer(_tournamentId, loser);
+                    _tournamentService.recordPlayerTournamentAbandon(_tournamentId, loser);
                     _droppedPlayers.add(loser);
                 }
                 _currentStandings = null;
@@ -235,7 +269,7 @@ public class DefaultTournament implements Tournament {
         writeLock.lock();
         try {
             if (_tournamentStage == Stage.DECK_BUILDING && _players.contains(player)) {
-                _tournamentService.setPlayerDeck(_tournamentId, player, deck);
+                _tournamentService.updateRecordedPlayerDeck(_tournamentId, player, deck);
                 _playerDecks.put(player, deck);
             }
         } finally {
@@ -283,7 +317,7 @@ public class DefaultTournament implements Tournament {
             if (!_players.contains(player))
                 return false;
 
-            _tournamentService.dropPlayer(_tournamentId, player);
+            _tournamentService.recordPlayerTournamentAbandon(_tournamentId, player);
             _droppedPlayers.add(player);
             regeneratePlayerList();
             return true;
@@ -303,7 +337,7 @@ public class DefaultTournament implements Tournament {
                     if (_draft.isFinished()) {
                         result.add(new BroadcastAction("Drafting in tournament " + _tournamentName + " is finished, starting deck building"));
                         _tournamentStage = Stage.DECK_BUILDING;
-                        _tournamentService.updateTournamentStage(_tournamentId, _tournamentStage);
+                        _tournamentService.recordTournamentStage(_tournamentId, _tournamentStage);
                         _deckBuildStartTime = System.currentTimeMillis();
                         _draft = null;
                     }
@@ -312,21 +346,22 @@ public class DefaultTournament implements Tournament {
                     if (_deckBuildStartTime + DeckBuildTime < System.currentTimeMillis()
                             || _playerDecks.size() == _players.size()) {
                         _tournamentStage = Stage.PLAYING_GAMES;
-                        _tournamentService.updateTournamentStage(_tournamentId, _tournamentStage);
+                        _tournamentService.recordTournamentStage(_tournamentId, _tournamentStage);
                         result.add(new BroadcastAction("Deck building in tournament " + _tournamentName + " has finished"));
                     }
                 }
                 if (_tournamentStage == Stage.AWAITING_KICKOFF || _tournamentStage == Stage.PAUSED) {
-
+                    // We await a moderator to manually progress the tournament stage
                 } else if (_tournamentStage == Stage.PREPARING) {
                     _tournamentStage = Stage.PLAYING_GAMES;
-                    _tournamentService.updateTournamentStage(_tournamentId, _tournamentStage);
+                    _tournamentService.recordTournamentStage(_tournamentId, _tournamentStage);
                 } else if (_tournamentStage == Stage.PLAYING_GAMES) {
                     if (_currentlyPlayingPlayers.isEmpty()) {
                         if (_pairingMechanism.isFinished(_tournamentRound, _players, _droppedPlayers)) {
                             result.add(finishTournament(collectionsManager));
                         } else {
-                            result.add(new BroadcastAction("Tournament " + _tournamentName + " will start round "+(_tournamentRound+1)+" in 1 minute."));
+                            String duration = DurationFormatUtils.formatDurationWords(PairingDelayTime, true, true);
+                            result.add(new BroadcastAction("Tournament " + _tournamentName + " will start round "+(_tournamentRound+1)+" in " + duration + "."));
                             _nextTask = new PairPlayers();
                         }
                     }
@@ -360,7 +395,7 @@ public class DefaultTournament implements Tournament {
 
     private TournamentProcessAction finishTournament(CollectionsManager collectionsManager) {
         _tournamentStage = Stage.FINISHED;
-        _tournamentService.updateTournamentStage(_tournamentId, _tournamentStage);
+        _tournamentService.recordTournamentStage(_tournamentId, _tournamentStage);
         awardPrizes(collectionsManager);
         return new BroadcastAction("Tournament " + _tournamentName + " is finished");
     }
@@ -384,7 +419,7 @@ public class DefaultTournament implements Tournament {
 
     private void doPairing(List<TournamentProcessAction> actions, CollectionsManager collectionsManager) {
         _tournamentRound++;
-        _tournamentService.updateTournamentRound(_tournamentId, _tournamentRound);
+        _tournamentService.recordTournamentRound(_tournamentId, _tournamentRound);
         Map<String, String> pairingResults = new HashMap<>();
         Set<String> byeResults = new HashSet<>();
 
@@ -398,7 +433,7 @@ public class DefaultTournament implements Tournament {
             for (Map.Entry<String, String> pairing : pairingResults.entrySet()) {
                 String playerOne = pairing.getKey();
                 String playerTwo = pairing.getValue();
-                _tournamentService.addMatch(_tournamentId, _tournamentRound, playerOne, playerTwo);
+                _tournamentService.recordMatchup(_tournamentId, _tournamentRound, playerOne, playerTwo);
                 _currentlyPlayingPlayers.add(playerOne);
                 _currentlyPlayingPlayers.add(playerTwo);
                 actions.add(createNewGame(playerOne, playerTwo));
@@ -409,7 +444,7 @@ public class DefaultTournament implements Tournament {
             }
 
             for (String bye : byeResults) {
-                _tournamentService.addRoundBye(_tournamentId, bye, _tournamentRound);
+                _tournamentService.recordTournamentRoundBye(_tournamentId, bye, _tournamentRound);
                 _playerByes.put(bye, _tournamentRound);
             }
         }
@@ -475,7 +510,7 @@ public class DefaultTournament implements Tournament {
                 ZonedDateTime tournamentStart = null;
                 ZonedDateTime tournamentEnd = null;
 
-                var games = _tournamentService.getGames(_tournamentName);
+                var games = _tournamentService.getRecordedGames(_tournamentName);
 
                 for (var match : _finishedTournamentMatches) {
                     var game = games.stream()
@@ -553,7 +588,7 @@ public class DefaultTournament implements Tournament {
                         rounds.add(createEntry(label, url));
                     }
 
-                    LotroDeck deck = _tournamentService.getPlayerDeck(_tournamentId, playerName, _format);
+                    LotroDeck deck = _tournamentService.retrievePlayerDeck(_tournamentId, playerName, _format);
 
                     var fragment = renderer.convertDeckToForumFragment(deck, playerName, rounds);
                     sections.add(fragment);

@@ -63,7 +63,7 @@ public class ScheduledTournamentQueue extends AbstractTournamentQueue implements
         if (now.isAfter(_startTime)) {
             if (_players.size() >= _minimumPlayers) {
                 for (String player : _players)
-                    _tournamentService.addPlayer(_scheduledTournamentId, player, _playerDecks.get(player));
+                    _tournamentService.recordTournamentPlayer(_scheduledTournamentId, player, _playerDecks.get(player));
 
                 var info = new TournamentInfo(_scheduledTournamentId, null, _tournamentName, _format, ZonedDateTime.now(),
                         _collectionType, _stage, 0, false,
@@ -73,7 +73,7 @@ public class ScheduledTournamentQueue extends AbstractTournamentQueue implements
 
                 tournamentQueueCallback.createTournament(tournament);
             } else {
-                _tournamentService.updateScheduledTournamentStarted(_scheduledTournamentId);
+                _tournamentService.recordScheduledTournamentStarted(_scheduledTournamentId);
                 leaveAllPlayers(collectionsManager);
             }
 

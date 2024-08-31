@@ -68,7 +68,7 @@ public class RecurringScheduledQueue extends AbstractTournamentQueue implements 
                 String tournamentName = _tournamentQueueName + " - " + DateUtils.getStringDateWithHour();
 
                 for (String player : _players)
-                    _tournamentService.addPlayer(tournamentId, player, _playerDecks.get(player));
+                    _tournamentService.recordTournamentPlayer(tournamentId, player, _playerDecks.get(player));
 
                 var info = new TournamentInfo(tournamentId, null, tournamentName, _format, ZonedDateTime.now(),
                         _collectionType, Tournament.Stage.PLAYING_GAMES, 0, false,

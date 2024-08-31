@@ -17,7 +17,6 @@ import com.gempukku.lotro.league.LeagueService;
 import com.gempukku.lotro.logic.GameUtils;
 import com.gempukku.lotro.logic.timing.GameResultListener;
 import com.gempukku.lotro.logic.vo.LotroDeck;
-import com.gempukku.lotro.packs.ProductLibrary;
 import com.gempukku.lotro.service.AdminService;
 import com.gempukku.lotro.tournament.*;
 import org.apache.logging.log4j.LogManager;
@@ -230,7 +229,7 @@ public class HallServer extends AbstractServer {
     protected void doAfterStartup() {
         _hallDataAccessLock.writeLock().lock();
         try {
-            _tournamentService.reloadTournaments();
+            _tournamentService.reloadTournaments(tableHolder);
         } finally {
             _hallDataAccessLock.writeLock().unlock();
         }
@@ -295,7 +294,7 @@ public class HallServer extends AbstractServer {
 
         GameSettings gameSettings = createGameSettings(type, timer, description, isInviteOnly, isPrivate, isHidden);
 
-        LotroDeck lotroDeck = validateUserAndDeck(gameSettings.getLotroFormat(), player, deckName, gameSettings.getCollectionType());
+        LotroDeck lotroDeck = validateUserAndDeck(gameSettings.format(), player, deckName, gameSettings.collectionType());
 
         _hallDataAccessLock.writeLock().lock();
         try {
@@ -315,7 +314,7 @@ public class HallServer extends AbstractServer {
 
         GameSettings gameSettings = createGameSettings(type, timer, description, isInviteOnly, isPrivate, isHidden);
 
-        LotroDeck lotroDeck = validateUserAndDeck(gameSettings.getLotroFormat(), librarian, deckName, gameSettings.getCollectionType());
+        LotroDeck lotroDeck = validateUserAndDeck(gameSettings.format(), librarian, deckName, gameSettings.collectionType());
 
         _hallDataAccessLock.writeLock().lock();
         try {
@@ -366,7 +365,7 @@ public class HallServer extends AbstractServer {
         if (format == null)
             throw new HallException("This format is not supported: " + type);
 
-        return new GameSettings(collectionType, format, league, leagueSerie,
+        return new GameSettings(collectionType, format, null, league, leagueSerie,
                 league != null, isPrivate, isInviteOnly, isHidden, gameTimer, description);
     }
 
@@ -404,7 +403,7 @@ public class HallServer extends AbstractServer {
             throw new HallException("Server is in shutdown mode. Server will be restarted after all running games are finished.");
 
         GameSettings gameSettings = tableHolder.getGameSettings(tableId);
-        LotroDeck lotroDeck = validateUserAndDeck(gameSettings.getLotroFormat(), player, deckName, gameSettings.getCollectionType());
+        LotroDeck lotroDeck = validateUserAndDeck(gameSettings.format(), player, deckName, gameSettings.collectionType());
 
         _hallDataAccessLock.writeLock().lock();
         try {
@@ -425,7 +424,7 @@ public class HallServer extends AbstractServer {
             throw new HallException("Server is in shutdown mode. Server will be restarted after all running games are finished.");
 
         GameSettings gameSettings = tableHolder.getGameSettings(tableId);
-        LotroDeck lotroDeck = validateUserAndDeck(gameSettings.getLotroFormat(), librarian, deckName, gameSettings.getCollectionType());
+        LotroDeck lotroDeck = validateUserAndDeck(gameSettings.format(), librarian, deckName, gameSettings.collectionType());
 
         _hallDataAccessLock.writeLock().lock();
         try {
@@ -669,18 +668,18 @@ public class HallServer extends AbstractServer {
     }
 
     private String getTournamentName(GameTable table) {
-        final League league = table.getGameSettings().getLeague();
+        final League league = table.getGameSettings().league();
         if (league != null)
-            return league.getName() + " - " + table.getGameSettings().getLeagueSerie().getName();
+            return league.getName() + " - " + table.getGameSettings().leagueSerie().getName();
         else
-            return "Casual - " + table.getGameSettings().getTimeSettings().name();
+            return "Casual - " + table.getGameSettings().timeSettings().name();
     }
 
     private void createGameFromTable(GameTable gameTable) {
         Set<LotroGameParticipant> players = gameTable.getPlayers();
         LotroGameParticipant[] participants = players.toArray(new LotroGameParticipant[0]);
-        final League league = gameTable.getGameSettings().getLeague();
-        final LeagueSerieInfo leagueSerie = gameTable.getGameSettings().getLeagueSerie();
+        final League league = gameTable.getGameSettings().league();
+        final LeagueSerieInfo leagueSerie = gameTable.getGameSettings().leagueSerie();
 
         GameResultListener listener = null;
         if (league != null) {
@@ -732,10 +731,7 @@ public class HallServer extends AbstractServer {
     public void cleanup(boolean forceRefresh) throws SQLException, IOException {
         _hallDataAccessLock.writeLock().lock();
         try {
-            // Remove finished games
-            tableHolder.removeFinishedGames();
-
-            boolean changed = false;
+            boolean changed = tableHolder.removeFinishedGames();
 
             long currentTime = System.currentTimeMillis();
             Map<Player, HallCommunicationChannel> visitCopy = new LinkedHashMap<>(_playerChannelCommunication);
@@ -754,15 +750,15 @@ public class HallServer extends AbstractServer {
             }
 
             if (forceRefresh) {
-                _tournamentService.reloadTournaments();
+                _tournamentService.reloadTournaments(tableHolder);
             }
 
-            changed |= _tournamentService.cleanupTournamentQueues(this);
-            changed |= _tournamentService.cleanupTournaments(this);
+            changed |= _tournamentService.processTournamentQueues();
+            changed |= _tournamentService.processTournaments(this);
 
             if (_tickCounter == 60 || forceRefresh) {
                 _tickCounter = 0;
-                changed |= _tournamentService.refreshQueues(this);
+                changed |= _tournamentService.refreshQueues();
             }
             _tickCounter++;
 
@@ -793,10 +789,12 @@ public class HallServer extends AbstractServer {
             tournamentId = tournament.getTournamentId();
             tournamentName = tournament.getTournamentName();
             tournamentGameSettings = new GameSettings(null, _formatLibrary.getFormat(tournament.getFormat()),
-                    null, null, true, true, false, false, GameTimer.TOURNAMENT_TIMER, null);
+                    tournamentId, null, null, true, true, false,
+                    false, GameTimer.TOURNAMENT_TIMER, null);
 
             wcGameSettings = new GameSettings(null, _formatLibrary.getFormat(tournament.getFormat()),
-                    null, null, true, true, false, false, GameTimer.CHAMPIONSHIP_TIMER, null);
+                    tournamentId, null, null, true, true, false,
+                    false, GameTimer.CHAMPIONSHIP_TIMER, null);
         }
 
         @Override
@@ -848,18 +846,18 @@ public class HallServer extends AbstractServer {
         }
     }
 
-    public ManualGameSpawner createManualGameSpawner(String tournamentName, LotroFormat format, GameTimer timer, String description) {
-        return new ManualGameSpawner(tournamentName, format, timer, description);
+    public ManualGameSpawner createManualGameSpawner(Tournament tourney, LotroFormat format, GameTimer timer, String description) {
+        return new ManualGameSpawner(tourney, format, timer, description);
     }
 
     public class ManualGameSpawner implements TournamentCallback {
         private final String _tournamentName;
         private final GameSettings _settings;
 
-        private ManualGameSpawner(String tournamentName, LotroFormat format, GameTimer timer, String description) {
-            _tournamentName = tournamentName;
+        private ManualGameSpawner(Tournament tourney, LotroFormat format, GameTimer timer, String description) {
+            _tournamentName = tourney.getTournamentName();
             _settings = new GameSettings(null, format,
-                    null, null, true, false, false, false, timer, description);
+                    tourney.getTournamentId(), null, null, true, false, false, false, timer, description);
         }
 
         @Override

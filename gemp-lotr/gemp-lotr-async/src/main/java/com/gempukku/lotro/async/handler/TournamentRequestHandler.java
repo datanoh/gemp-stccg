@@ -4,18 +4,14 @@ import com.gempukku.lotro.async.HttpProcessingException;
 import com.gempukku.lotro.async.ResponseWriter;
 import com.gempukku.lotro.collection.DeckRenderer;
 import com.gempukku.lotro.competitive.PlayerStanding;
-import com.gempukku.lotro.game.CardCollection;
-import com.gempukku.lotro.game.DefaultCardCollection;
 import com.gempukku.lotro.game.LotroCardBlueprintLibrary;
 import com.gempukku.lotro.game.SortAndFilterCards;
 import com.gempukku.lotro.game.formats.LotroFormatLibrary;
-import com.gempukku.lotro.logic.GameUtils;
 import com.gempukku.lotro.logic.vo.LotroDeck;
 import com.gempukku.lotro.tournament.Tournament;
 import com.gempukku.lotro.tournament.TournamentService;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
@@ -120,7 +116,7 @@ public class TournamentRequestHandler extends LotroServerRequestHandler implemen
         if (tournament.getTournamentStage() != Tournament.Stage.FINISHED)
             throw new HttpProcessingException(403);
 
-        LotroDeck deck = _tournamentService.getPlayerDeck(tournamentId, playerName, tournament.getFormat());
+        LotroDeck deck = _tournamentService.retrievePlayerDeck(tournamentId, playerName, tournament.getFormat());
         if (deck == null)
             throw new HttpProcessingException(404);
 
