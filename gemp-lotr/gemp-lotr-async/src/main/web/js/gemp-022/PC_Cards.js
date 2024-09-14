@@ -524,6 +524,7 @@ var PCCards = {
 	'1_383': 'https://i.lotrtcgpc.net/promos/LOTR-EN01U178.2_card.jpg',
 	'1_384': 'https://i.lotrtcgpc.net/promos/LOTR-EN01U178.3_card.jpg',
 	'1_385': 'https://i.lotrtcgpc.net/promos/LOTR-EN01U178.4_card.jpg',
+	'1_392': 'https://i.lotrtcgpc.net/promos/LOTR-EN01U178.5_card.jpg',
 	
 	//2023 Yuletide Errata
 	// Legolas, Keen-eyed (V1R9) [Errata]
@@ -646,5 +647,9 @@ var PCCards = {
 	'8_127': 'https://i.lotrtcgpc.net/promos/LOTR-EN08U092.0_card.jpg',
 	//Evil-smelling Fens FA
 	'5_129': 'https://i.lotrtcgpc.net/promos/LOTR-EN05U022.0_card.jpg',
+	
+	//September 2024 Walk-on Qualifiers
+	//Legolas, Greenleaf FA
+	'1_391': 'https://i.lotrtcgpc.net/promos/LOTR-EN01U050.0_card.jpg'
 }
 
