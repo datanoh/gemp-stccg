@@ -56,6 +56,10 @@
 							filter: choose(culture(isengard),minion)
 						}
 					}
+					{
+						type: Discard
+						select: memory(targetFort)
+					}
 				]
 			}
 			{
