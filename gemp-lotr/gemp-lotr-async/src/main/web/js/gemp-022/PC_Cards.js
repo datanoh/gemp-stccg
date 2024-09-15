@@ -654,11 +654,13 @@ var PCCards = {
 	
 	//September 2024 Post-FC Errata
 	'51_177' : 'https://i.lotrtcgpc.net/errata/LOTR-EN01E177.2_card.jpg',
+	'51_331' : 'https://i.lotrtcgpc.net/errata/LOTR-EN01E331.1_card.jpg',
 	'52_76'  : 'https://i.lotrtcgpc.net/errata/LOTR-EN02E076.2_card.jpg',
 	'53_50'  : 'https://i.lotrtcgpc.net/errata/LOTR-EN03E050.2_card.jpg',
 	'53_80'  : 'https://i.lotrtcgpc.net/errata/LOTR-EN03E080.2_card.jpg',
 	'53_85'  : 'https://i.lotrtcgpc.net/errata/LOTR-EN03E085.2_card.jpg',
 	'53_103' : 'https://i.lotrtcgpc.net/errata/LOTR-EN03E103.3_card.jpg',
 	'53_105' : 'https://i.lotrtcgpc.net/errata/LOTR-EN03E105.2_card.jpg'
+	
 }
 
