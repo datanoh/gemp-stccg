@@ -189,12 +189,8 @@
 		culture: Wraith
 		twilight: 0
 		type: Condition
-		keyword: support area
+		target: name(Sam)
 		requires: [
-			{
-				type: canSpot
-				filter: name(Frodo)
-			}
 			{
 				type: canSpot
 				filter: nazgul
@@ -204,8 +200,8 @@
 			{
 				type: modifier
 				modifier: {
-					type: disableGameText
-					filter: hasAttached(self)
+					type: cantUseSpecialAbilities
+					filter: bearer
 				}
 			}
 		]
