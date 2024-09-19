@@ -163,9 +163,6 @@ public class SealedTournament extends BaseTournament implements Tournament {
                     else if (DateUtils.Now().isAfter(_sealedInfo.DeckbuildingDeadline) && _playerDecks.values().stream().noneMatch(x -> StringUtils.isEmpty(x.getDeckName()))) {
                         _tournamentInfo.Stage = _sealedInfo.PostRegistrationStage();
                         _tournamentService.recordTournamentStage(_tournamentId, getTournamentStage());
-
-                        result.add(new BroadcastAction("Deck building in tournament <b>" + getTournamentName()
-                                + "</b> has finished and all players have turned in their decks.  Stand by for the start of the tournament."));
                     }
                 }
 
@@ -175,8 +172,6 @@ public class SealedTournament extends BaseTournament implements Tournament {
 
                         _tournamentInfo.Stage = _sealedInfo.PostRegistrationStage();
                         _tournamentService.recordTournamentStage(_tournamentId, getTournamentStage());
-                        result.add(new BroadcastAction("Deck registration for tournament <b>" + getTournamentName()
-                                + "</b> has closed.  Stand by for the start of the tournament."));
                     }
                 }
 
@@ -191,8 +186,6 @@ public class SealedTournament extends BaseTournament implements Tournament {
                             result.add(finishTournament(collectionsManager));
                         } else {
                             if(getCurrentRound() == 0) {
-                                result.add(new BroadcastAction("Deck registration for tournament <b>" + getTournamentName()
-                                        + "</b> has closed.  Stand by for the start of the tournament."));
                                 result.add(new BroadcastAction("Deck registration for tournament <b>" + getTournamentName()
                                         + "</b> has closed. Round "
                                         + (getCurrentRound() + 1) + " will begin in " + DateUtils.HumanDuration(PairingDelayTime)

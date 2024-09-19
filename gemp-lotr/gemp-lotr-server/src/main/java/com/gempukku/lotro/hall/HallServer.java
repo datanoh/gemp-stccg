@@ -533,7 +533,7 @@ public class HallServer extends AbstractServer {
                         stage == Tournament.Stage.PAUSED || stage == Tournament.Stage.AWAITING_KICKOFF) {
                     LotroDeck lotroDeck = validateUserAndDeck(_formatLibrary.getFormat(tournament.getFormatCode()), player, deckName, tournament.getCollectionType());
 
-                    _tournamentService.updateRecordedPlayerDeck(tournamentId, player.getName(), lotroDeck);
+                    tournament.playerSubmittedDeck(player.getName(), lotroDeck);
                 }
                 result = "Registered deck '" + deckName + "' with tournament <b>" + tournament.getTournamentName() + "</b> successfully."
                         + "<br/><br/>If you make an update to your deck, you will need to register it here again for any changes to take effect.";
