@@ -144,7 +144,7 @@ public class SealedLeague implements LeagueData {
             maxGamesTotal+=sery.getMaxMatches();
 
         if (status == _series.size()) {
-            LeagueSerieInfo lastSerie = _series.get(_series.size() - 1);
+            LeagueSerieInfo lastSerie = _series.getLast();
             if (DateUtils.IsAtLeastDayAfter(currentTime, lastSerie.getEnd())) {
                 for (PlayerStanding leagueStanding : leagueStandings) {
                     CardCollection leaguePrize = _leaguePrizes.getPrizeForLeague(leagueStanding.standing, leagueStandings.size(), leagueStanding.gamesPlayed, maxGamesTotal);

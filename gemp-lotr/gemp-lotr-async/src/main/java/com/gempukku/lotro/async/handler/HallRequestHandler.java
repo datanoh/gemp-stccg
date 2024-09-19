@@ -144,9 +144,9 @@ public class HallRequestHandler extends LotroServerRequestHandler implements Uri
             String timer = getFormParameterSafely(postDecoder, "timer");
             String desc = getFormParameterSafely(postDecoder, "desc").trim();
             String isPrivateVal = getFormParameterSafely(postDecoder, "isPrivate");
-            boolean isPrivate = (isPrivateVal != null ? Boolean.valueOf(isPrivateVal) : false);
+            boolean isPrivate = Boolean.parseBoolean(isPrivateVal);
             String isInviteOnlyVal = getFormParameterSafely(postDecoder, "isInviteOnly");
-            boolean isInviteOnly = (isInviteOnlyVal != null ? Boolean.valueOf(isInviteOnlyVal) : false);
+            boolean isInviteOnly = Boolean.parseBoolean(isInviteOnlyVal);
             //To prevent annoyance, super long glacial games are hidden from everyone except
             // the participants and admins.
             boolean isHidden = timer.toLowerCase().equals(GameTimer.GLACIAL_TIMER.name());
@@ -402,10 +402,10 @@ public class HallRequestHandler extends LotroServerRequestHandler implements Uri
     }
 
     private void appendCards(StringBuilder result, List<String> additionalValidCards) throws CardNotFoundException {
-        if (additionalValidCards.size() > 0) {
+        if (!additionalValidCards.isEmpty()) {
             for (String blueprintId : additionalValidCards)
                 result.append(GameUtils.getCardLink(blueprintId, _library.getLotroCardBlueprint(blueprintId)) + ", ");
-            if (additionalValidCards.size() == 0)
+            if (additionalValidCards.isEmpty())
                 result.append("none,");
         }
     }

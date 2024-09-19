@@ -405,7 +405,9 @@ var GempLotrHallUI = Class.extend({
 										return;
 									
 									var queueId = queueInfo.getAttribute("id");
-									var type = queueInfo.getAttribute("type").toLowerCase();
+									var type = queueInfo.getAttribute("type");
+									if(type !== null)
+										type = type.toLowerCase();
 									var queueName = queueInfo.getAttribute("queue");
 									var queueStart = queueInfo.getAttribute("start");
 									that.comm.joinQueue(queueId, deck, function (xml) {
@@ -526,8 +528,12 @@ var GempLotrHallUI = Class.extend({
 				var id = tournament.getAttribute("id");
 				var isWC = id.includes("wc");
 				var action = tournament.getAttribute("action");
-				var type = tournament.getAttribute("type").toLowerCase();
-				var stage = tournament.getAttribute("stage").toLowerCase();
+				var type = tournament.getAttribute("type");
+				if(type !== null)
+					type = type.toLowerCase();
+				var stage = tournament.getAttribute("stage");
+					if(stage !== null)
+						stage = stage.toLowerCase();
 				var abandoned = tournament.getAttribute("abandoned") === "true";
 				if (action == "add" || action == "update") {
 					var actionsField = $("<td></td>");

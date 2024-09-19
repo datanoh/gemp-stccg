@@ -36,8 +36,8 @@ public class DateUtils {
     public static ZonedDateTime DateOf(int year, int month, int day) { return ZonedDateTime.of(year, month, day, 0, 0, 0, 0, UTC); }
 
     public static boolean IsToday(ZonedDateTime date) { return DaysSince(date) == 0; }
-    public static boolean IsAtLeastDayAfter(ZonedDateTime a, ZonedDateTime b) { return DaysBetween(b, a) > 1; }
-    public static boolean IsAfterStart(ZonedDateTime date, ZonedDateTime start) { return DaysBetween(start, date) >= 0; }
+    public static boolean IsAtLeastDayAfter(ZonedDateTime a, ZonedDateTime b) { return DaysBetween(b, a) >= 1; }
+    public static boolean IsAfterStart(ZonedDateTime date, ZonedDateTime start) { return date.isEqual(start) || date.isAfter(start); }
     public static boolean IsBeforeEnd(ZonedDateTime date, ZonedDateTime end) { return DaysBetween(end, date) < 0; }
     public static boolean IsSameDay(ZonedDateTime a, ZonedDateTime b) { return DaysBetween(a, b) == 0; }
     public static long DaysBetween(ZonedDateTime a, ZonedDateTime b) { return Duration.between(a, b).toDays(); }
