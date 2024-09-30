@@ -1,20 +1,4 @@
 {
-	100_0: {
-		title: 2024 World Championship Invitation
-		type: Event
-		twilight: 5
-		culture: Elven
-		keyword: Regroup
-		effects: {
-			type: event
-			effect: [
-				{
-					type: SendMessage
-					text: The holder of this card is invited to the 2024 World Championship Group Stage.  How the hell did you play this card in a game...?
-				}
-			]
-		}
-	}
 	
 	100_1: {
 		cardInfo: {
