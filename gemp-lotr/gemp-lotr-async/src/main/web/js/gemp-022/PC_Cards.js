@@ -660,7 +660,10 @@ var PCCards = {
 	'53_80'  : 'https://i.lotrtcgpc.net/errata/LOTR-EN03E080.2_card.jpg',
 	'53_85'  : 'https://i.lotrtcgpc.net/errata/LOTR-EN03E085.2_card.jpg',
 	'53_103' : 'https://i.lotrtcgpc.net/errata/LOTR-EN03E103.3_card.jpg',
-	'53_105' : 'https://i.lotrtcgpc.net/errata/LOTR-EN03E105.2_card.jpg'
+	'53_105' : 'https://i.lotrtcgpc.net/errata/LOTR-EN03E105.2_card.jpg',
+	
+	//2024 WC Invitation "Card"
+	'100_0' : 'https://i.lotrtcgpc.net/other/2024-wc-invite.jpg',
 	
 }
 
